@@ -1,4 +1,4 @@
-import type { MenuItem as MenuItemType } from "../data/menu";
+import type { MenuItem as MenuItemType } from "../types/menu";
 
 type MenuItemProps = {
   item: MenuItemType;
@@ -6,28 +6,43 @@ type MenuItemProps = {
 
 export function MenuItem({ item }: MenuItemProps) {
   return (
-    <article className="grid gap-3 border-t border-black/20 py-7 md:grid-cols-[1.2fr_2fr_auto] md:gap-8">
-      <div>
-        <div className="flex flex-wrap items-center gap-3">
-          <h3 className="font-serif text-xl">{item.name}</h3>
+    <article className="border-t border-[#d9d0be] py-10">
+      <div className="grid grid-cols-[minmax(0,1fr)_150px] gap-x-8 md:grid-cols-[minmax(0,1fr)_190px]">
+        <div>
+          <div className="flex flex-wrap items-center gap-4">
+            <h4 className="font-serif text-3xl text-[#332b22] md:text-4xl">
+              {item.name}
+            </h4>
 
-          {item.badge && (
-            <span className="rounded-full border border-black/30 px-3 py-1 text-[0.65rem] font-semibold uppercase tracking-[0.16em]">
-              {item.badge}
-            </span>
+            {item.badge && (
+              <span className="border border-[#cdbb98] px-4 py-2 text-xs uppercase tracking-[0.18em] text-[#9a6f32]">
+                {item.badge}
+              </span>
+            )}
+          </div>
+
+          <p className="mt-4 text-lg leading-8 text-[#756f67] md:text-xl">
+            {item.description}
+          </p>
+
+          {item.extra_text && (
+            <p className="mt-2 text-lg italic leading-8 text-[#9a948c] md:text-xl">
+              {item.extra_text}
+            </p>
           )}
         </div>
-      </div>
 
-      <p className="max-w-2xl text-sm leading-6 text-black/70">
-        {item.description}
-      </p>
+        <div className="text-right">
+          <p className="font-serif text-3xl text-[#9a6f32] md:text-4xl">
+            {item.price} kr
+          </p>
 
-      <div className="whitespace-nowrap font-serif text-lg">
-        {item.price} kr
-        {item.priceNote && (
-          <div className="mt-1 text-xs text-black/60">{item.priceNote}</div>
-        )}
+          {item.price_with_seeds !== null && (
+            <p className="mt-5 whitespace-nowrap font-serif text-xl text-[#b09a79] md:text-2xl">
+              {item.price_with_seeds} kr med frø
+            </p>
+          )}
+        </div>
       </div>
     </article>
   );

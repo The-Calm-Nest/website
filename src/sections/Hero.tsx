@@ -1,39 +1,43 @@
 export function Hero() {
   return (
-    <section
-      id="home"
-      className="relative flex min-h-[88vh] items-end overflow-hidden"
-    >
-      <img
-        src="/images/hero-bread.jpg"
-        alt="Freshly baked sourdough bread"
-        className="absolute inset-0 h-full w-full object-cover"
-      />
+    <section id="home" className="px-6 pb-20 pt-16 md:px-10 md:pb-28 md:pt-24">
+      <div className="mx-auto max-w-[1040px]">
+        <div className="max-w-2xl">
+          <p className="text-[0.7rem] font-semibold uppercase tracking-[0.24em] text-[#8b7653]">
+            Nannestad · Surdeigshus
+          </p>
 
-      <div className="absolute inset-0 bg-black/35" />
+          <h1 className="mt-7 font-serif text-6xl leading-[0.98] text-[#332b22] md:text-[5.5rem]">
+            Godt brød
+            <br />
+            <em className="font-normal text-[#967548]">tar tre dager.</em>
+          </h1>
 
-      <div className="relative mx-auto w-full max-w-7xl px-6 pb-14 text-white md:px-10 md:pb-20">
-        <p className="mb-5 text-xs font-semibold uppercase tracking-[0.24em]">
-          Nannestad · Surdeigshus
-        </p>
+          <p className="mt-8 max-w-xl text-lg leading-8 text-[#77776e]">
+            Et lite hjemmebakeri som åpner én gang i uken.
+            Langtidshevet surdeig, økologiske råvarer, bakt med omhu.
+          </p>
 
-        <h1 className="max-w-3xl font-serif text-5xl leading-[0.95] md:text-8xl">
-          Godt brød
-          <br />
-          tar tre dager.
-        </h1>
+          <a
+            href="#menu"
+            className="mt-12 inline-block text-xs uppercase tracking-[0.22em] text-[#77776e]"
+          >
+            Se ukens meny
+          </a>
+        </div>
 
-        <p className="mt-7 max-w-xl text-base leading-7 text-white/90 md:text-lg">
-          Et lite hjemmebakeri som åpner én gang i uken. Langtidshevet
-          surdeig, økologiske råvarer, bakt med omhu.
-        </p>
+        <div className="mt-16 border-t border-[#d9d0be] pt-7">
+          <p className="text-xs uppercase tracking-[0.15em] text-[#b19a72]">
+            Meny publiseres lørdag · Bestilling stenger tirsdag · Henting fredag
+            15–18
+          </p>
+        </div>
 
-        <a
-          href="#menu"
-          className="mt-8 inline-flex border-b border-white pb-2 text-xs font-semibold uppercase tracking-[0.2em]"
-        >
-          Se ukens meny
-        </a>
+        <img
+          src="/images/hero-bread.jpg"
+          alt="Landskap ved gården i Nannestad"
+          className="mt-14 aspect-[16/8] w-full object-cover"
+        />
       </div>
     </section>
   );
