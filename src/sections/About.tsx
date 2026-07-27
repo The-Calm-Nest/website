@@ -18,7 +18,7 @@ export function About() {
         {/* Large bread image */}
         <div className="relative mt-12">
           <img
-            src="/images/bakery-about.jpg"
+            src={`${import.meta.env.BASE_URL}images/bakery-about.jpg`}
             alt="Surdeigsbrød bakt hos The Calm Nest"
             className="aspect-[16/9] w-full object-cover"
           />

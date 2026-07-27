@@ -34,7 +34,7 @@ export function Hero() {
         </div>
 
         <img
-          src="/images/hero-bread.jpg"
+          src={`${import.meta.env.BASE_URL}images/hero-bread.jpg`}
           alt="Landskap ved gården i Nannestad"
           className="mt-14 aspect-[16/8] w-full object-cover"
         />
