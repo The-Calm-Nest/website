@@ -1,0 +1,16 @@
+{
+  "name": "the-calm-nest",
+  "compatibility_date": "2026-09-14",
+
+  "assets": {
+    "directory": "./dist"
+  },
+
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "the-calm-nest-db",
+      "database_id": "0629c0cd-9b16-47bc-84ef-250390104b15"
+    }
+  ]
+}
