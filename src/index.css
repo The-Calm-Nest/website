@@ -1,5 +1,20 @@
 @import "tailwindcss";
 
+:root {
+  --bg: #f4efe5;
+  --paper: #f8f4ec;
+  --ink: #2d2118;
+  --muted: #786b5d;
+  --line: #d7c8b7;
+  --accent: #a56636;
+  --accent-dark: #3a281b;
+  --accent-soft: #e9ddce;
+}
+
+* {
+  box-sizing: border-box;
+}
+
 html {
   scroll-behavior: smooth;
 }
@@ -7,13 +22,761 @@ html {
 body {
   margin: 0;
   min-width: 320px;
-  background: #faf8f3;
-  color: #332f28;
+  background: var(--bg);
+  color: var(--ink);
   font-family: Arial, Helvetica, sans-serif;
   -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+img {
+  display: block;
+  width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
 }
 
 button,
 a {
   font: inherit;
+}
+
+.content {
+  width: min(100% - 2rem, 1040px);
+  margin-inline: auto;
+}
+
+.section {
+  padding: 5.5rem 0;
+}
+
+.eyebrow {
+  margin: 0;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.2em;
+  text-transform: uppercase;
+  color: #7b634b;
+}
+
+.section h2,
+.about h2,
+.contact h2,
+.ordering-card h2 {
+  margin: 0.8rem 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+  line-height: 1.05;
+}
+
+.section h2,
+.about h2,
+.contact h2 {
+  font-size: clamp(2.4rem, 5vw, 4.7rem);
+}
+
+.section-intro {
+  max-width: 44rem;
+  margin: 1.25rem 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+
+/* -------------------------------------------------------
+   HEADER
+------------------------------------------------------- */
+
+.site-header {
+  position: sticky;
+  top: 0;
+  z-index: 50;
+  border-bottom: 1px solid rgba(65, 45, 28, 0.12);
+  background: rgba(244, 239, 229, 0.94);
+  backdrop-filter: blur(14px);
+}
+
+.header-inner {
+  width: min(100% - 2rem, 1120px);
+  height: 72px;
+  margin-inline: auto;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 2rem;
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  letter-spacing: 0.04em;
+}
+
+.brand img {
+  width: 42px;
+  height: 42px;
+  object-fit: contain;
+}
+
+.site-header nav {
+  display: flex;
+  align-items: center;
+  gap: 1.9rem;
+}
+
+.site-header nav a {
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: #65584c;
+  transition: opacity 0.2s ease;
+}
+
+.site-header nav a:hover {
+  opacity: 0.55;
+}
+
+
+/* -------------------------------------------------------
+   HERO
+------------------------------------------------------- */
+
+.hero {
+  padding: 6rem 0 4.25rem;
+}
+
+.hero .content {
+  max-width: 900px;
+}
+
+.hero h1 {
+  margin: 1.15rem 0 0;
+  max-width: 720px;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(4.3rem, 10vw, 8.5rem);
+  font-weight: 400;
+  line-height: 0.86;
+  letter-spacing: -0.045em;
+}
+
+.hero h1 em {
+  display: block;
+  margin-top: 0.25rem;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.hero-copy {
+  max-width: 570px;
+  margin: 2.2rem 0 0;
+  font-size: 1.1rem;
+  line-height: 1.75;
+  color: var(--muted);
+}
+
+.primary-button {
+  display: inline-flex;
+  margin-top: 2.4rem;
+  padding: 0.95rem 1.4rem;
+  background: var(--accent);
+  color: #fffaf4;
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.17em;
+  text-transform: uppercase;
+}
+
+.hero-image {
+  width: 100%;
+  max-height: 760px;
+  overflow: hidden;
+}
+
+.hero-image img {
+  height: min(70vh, 760px);
+  object-fit: cover;
+  object-position: center 54%;
+}
+
+
+/* -------------------------------------------------------
+   SCHEDULE
+------------------------------------------------------- */
+
+.schedule {
+  border-bottom: 1px solid var(--line);
+  background: #efe5d7;
+  padding: 1.8rem 0;
+}
+
+.schedule-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 1.5rem;
+}
+
+.schedule-grid div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.schedule-grid strong {
+  font-size: 0.68rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+}
+
+.schedule-grid span {
+  font-size: 0.86rem;
+  line-height: 1.5;
+  color: var(--muted);
+}
+
+
+/* -------------------------------------------------------
+   MENU
+------------------------------------------------------- */
+
+.menu-section {
+  padding-top: 6.5rem;
+}
+
+.section-heading {
+  display: flex;
+  align-items: end;
+  justify-content: space-between;
+  gap: 2rem;
+  margin-bottom: 3.8rem;
+}
+
+.section-heading > p {
+  margin: 0 0 0.6rem;
+  font-size: 0.7rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+
+.menu-category {
+  margin-top: 4rem;
+}
+
+.menu-category > h3 {
+  margin: 0 0 0.65rem;
+  font-size: 0.72rem;
+  letter-spacing: 0.21em;
+  text-transform: uppercase;
+  color: #675a4d;
+}
+
+.menu-item {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2.5rem;
+  padding: 1.65rem 0;
+  border-top: 1px solid var(--line);
+}
+
+.menu-title-row {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 0.75rem;
+}
+
+.menu-title-row h4 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(1.35rem, 2.4vw, 2rem);
+  font-weight: 400;
+  line-height: 1.15;
+}
+
+.menu-title-row span {
+  font-size: 0.62rem;
+  letter-spacing: 0.16em;
+  text-transform: uppercase;
+  color: #8c6c4c;
+}
+
+.menu-copy > p {
+  max-width: 650px;
+  margin: 0.6rem 0 0;
+  font-size: 0.95rem;
+  line-height: 1.65;
+  color: var(--muted);
+}
+
+.menu-copy .menu-extra {
+  color: #9b856f;
+  font-style: italic;
+}
+
+.menu-copy .menu-quantity {
+  color: #8a7a69;
+}
+
+.menu-price {
+  min-width: 110px;
+  text-align: right;
+}
+
+.menu-price strong,
+.menu-price span {
+  display: block;
+  font-family: Georgia, "Times New Roman", serif;
+  font-weight: 400;
+}
+
+.menu-price strong {
+  font-size: 1.55rem;
+  color: var(--accent);
+}
+
+.menu-price span {
+  margin-top: 0.6rem;
+  font-size: 0.95rem;
+  color: #92795e;
+}
+
+
+/* -------------------------------------------------------
+   LARGE EDITORIAL IMAGE
+------------------------------------------------------- */
+
+.editorial-image {
+  width: min(100% - 2rem, 1040px);
+  margin: 1rem auto 0;
+  overflow: hidden;
+}
+
+.editorial-image-tall img {
+  aspect-ratio: 4 / 3;
+  object-fit: cover;
+  object-position: center;
+}
+
+
+/* -------------------------------------------------------
+   FARM SHOP
+------------------------------------------------------- */
+
+.farm-shop {
+  background: #efe6da;
+}
+
+.farm-products {
+  margin-top: 3rem;
+  border-top: 1px solid var(--line);
+}
+
+.farm-products article {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  gap: 2rem;
+  padding: 1.7rem 0;
+  border-bottom: 1px solid var(--line);
+}
+
+.farm-products h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.farm-products p {
+  max-width: 640px;
+  margin: 0.5rem 0 0;
+  color: var(--muted);
+  line-height: 1.65;
+}
+
+.farm-products strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1rem;
+  font-weight: 400;
+  color: var(--accent);
+}
+
+.photo-grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 0.75rem;
+  margin-top: 3rem;
+}
+
+.photo-grid img {
+  aspect-ratio: 1 / 1;
+  object-fit: cover;
+}
+
+.photo-grid-wide {
+  grid-column: 1 / -1;
+  aspect-ratio: 16 / 8 !important;
+}
+
+
+/* -------------------------------------------------------
+   ORDERING DARK PANEL
+------------------------------------------------------- */
+
+.ordering-wrap {
+  padding: 5rem 0;
+  background: var(--bg);
+}
+
+.ordering-card {
+  max-width: 860px;
+  margin-inline: auto;
+  padding: clamp(2rem, 5vw, 4.5rem);
+  background: var(--accent-dark);
+  color: #f8efe2;
+}
+
+.ordering-card .eyebrow {
+  color: #ccb79f;
+}
+
+.ordering-card h2 {
+  font-size: clamp(2.6rem, 6vw, 5rem);
+}
+
+.ordering-card h3 {
+  margin: 2.2rem 0 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.5rem;
+  font-weight: 400;
+}
+
+.ordering-card > p {
+  max-width: 650px;
+  margin: 1rem 0 0;
+  color: #ddd0c1;
+  line-height: 1.75;
+}
+
+.contact-buttons {
+  display: grid;
+  gap: 0.65rem;
+  margin-top: 2.4rem;
+}
+
+.contact-buttons a {
+  display: flex;
+  justify-content: space-between;
+  gap: 1.5rem;
+  padding: 1rem 1.2rem;
+  border: 1px solid rgba(255, 255, 255, 0.18);
+  font-size: 0.67rem;
+  font-weight: 700;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+}
+
+.contact-buttons span {
+  text-align: right;
+  color: #d9c6b0;
+  font-weight: 400;
+  letter-spacing: normal;
+  text-transform: none;
+}
+
+.limited {
+  margin-top: 2rem;
+  padding-top: 1.8rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.18);
+}
+
+
+/* -------------------------------------------------------
+   REGULAR ORDERS
+------------------------------------------------------- */
+
+.regular-orders {
+  background: #eee4d6;
+}
+
+.regular-card {
+  max-width: 760px;
+  margin-top: 2.3rem;
+  padding: 2rem;
+  background: #f7f2ea;
+}
+
+.regular-card h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.6rem;
+  font-weight: 400;
+}
+
+.regular-card p {
+  margin: 0.8rem 0 0;
+  color: var(--muted);
+  line-height: 1.7;
+}
+
+
+/* -------------------------------------------------------
+   ABOUT
+------------------------------------------------------- */
+
+.about {
+  background: var(--paper);
+}
+
+.about-layout {
+  display: grid;
+  grid-template-columns: minmax(280px, 0.85fr) 1.15fr;
+  gap: clamp(2rem, 5vw, 5rem);
+  align-items: start;
+  margin-top: 3rem;
+}
+
+.about-portrait {
+  aspect-ratio: 4 / 5;
+  object-fit: cover;
+}
+
+.about-copy h3 {
+  margin: 0;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2rem, 4vw, 3.5rem);
+  font-weight: 400;
+}
+
+.about-copy p {
+  margin: 1.2rem 0 0;
+  color: var(--muted);
+  line-height: 1.8;
+}
+
+.about-detail {
+  margin-top: 4rem;
+  aspect-ratio: 16 / 8;
+  object-fit: cover;
+}
+
+
+/* -------------------------------------------------------
+   CONTACT
+------------------------------------------------------- */
+
+.contact {
+  padding: 5.5rem 0;
+  background: #e7dccd;
+}
+
+.contact-details {
+  display: grid;
+  gap: 0.6rem;
+  margin-top: 2.2rem;
+}
+
+.contact-details p {
+  margin: 0;
+}
+
+.contact-details strong {
+  display: inline-block;
+  min-width: 145px;
+  font-size: 0.7rem;
+  letter-spacing: 0.13em;
+}
+
+.contact-details a {
+  color: var(--accent-dark);
+}
+
+.footer-brand {
+  display: flex;
+  align-items: center;
+  gap: 1.5rem;
+  margin-top: 3rem;
+}
+
+.footer-brand img {
+  width: 100px;
+  height: 100px;
+  object-fit: contain;
+}
+
+.footer-brand div {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+}
+
+.footer-brand strong {
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.25rem;
+}
+
+.footer-brand span {
+  font-size: 0.85rem;
+  color: var(--muted);
+}
+
+
+/* -------------------------------------------------------
+   MOBILE
+------------------------------------------------------- */
+
+@media (max-width: 760px) {
+  .content {
+    width: min(100% - 2rem, 580px);
+  }
+
+  .section {
+    padding: 4rem 0;
+  }
+
+  .header-inner {
+    height: 62px;
+  }
+
+  .brand span {
+    display: none;
+  }
+
+  .brand img {
+    width: 38px;
+    height: 38px;
+  }
+
+  .site-header nav {
+    gap: 0.95rem;
+  }
+
+  .site-header nav a {
+    font-size: 0.58rem;
+    letter-spacing: 0.1em;
+  }
+
+  .hero {
+    padding: 4rem 0 3rem;
+  }
+
+  .hero h1 {
+    font-size: clamp(3.5rem, 17vw, 5.8rem);
+  }
+
+  .hero-copy {
+    font-size: 1rem;
+  }
+
+  .hero-image img {
+    height: 58vh;
+    min-height: 460px;
+  }
+
+  .schedule-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 1.3rem 1rem;
+  }
+
+  .section-heading {
+    display: block;
+  }
+
+  .section-heading > p {
+    margin-top: 1rem;
+  }
+
+  .menu-category {
+    margin-top: 3rem;
+  }
+
+  .menu-item {
+    grid-template-columns: minmax(0, 1fr) 88px;
+    gap: 1rem;
+    padding: 1.35rem 0;
+  }
+
+  .menu-title-row h4 {
+    font-size: 1.35rem;
+  }
+
+  .menu-copy > p {
+    font-size: 0.84rem;
+    line-height: 1.55;
+  }
+
+  .menu-price strong {
+    font-size: 1.2rem;
+  }
+
+  .menu-price span {
+    font-size: 0.8rem;
+  }
+
+  .editorial-image {
+    width: min(100% - 2rem, 580px);
+  }
+
+  .farm-products article {
+    grid-template-columns: 1fr;
+    gap: 0.65rem;
+  }
+
+  .farm-products strong {
+    font-size: 0.95rem;
+  }
+
+  .photo-grid {
+    gap: 0.55rem;
+  }
+
+  .ordering-wrap {
+    padding: 3.5rem 0;
+  }
+
+  .ordering-card {
+    padding: 2rem 1.4rem;
+  }
+
+  .contact-buttons a {
+    display: block;
+  }
+
+  .contact-buttons span {
+    display: block;
+    margin-top: 0.45rem;
+    text-align: left;
+  }
+
+  .about-layout {
+    grid-template-columns: 1fr;
+  }
+
+  .about-portrait {
+    aspect-ratio: 4 / 5;
+  }
+
+  .about-detail {
+    aspect-ratio: 4 / 3;
+  }
+
+  .footer-brand {
+    align-items: flex-start;
+  }
+
+  .footer-brand img {
+    width: 84px;
+    height: 84px;
+  }
+
+  .contact-details strong {
+    display: block;
+    margin-bottom: 0.25rem;
+  }
 }

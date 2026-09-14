@@ -1,54 +1,58 @@
+const base = import.meta.env.BASE_URL;
+
 export function About() {
   return (
-    <section
-      id="about"
-      className="border-b border-[#d9d0be] px-6 py-20 md:px-10 md:py-28"
-    >
-      <div className="mx-auto max-w-[1040px]">
-        {/* Small label */}
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#8b7653]">
-          Om oss
-        </p>
+    <section id="about" className="section about">
+      <div className="content">
+        <h2>Om The Calm Nest</h2>
 
-        {/* Medium heading */}
-        <h2 className="mt-7 max-w-3xl font-serif text-4xl leading-tight text-[#332b22] md:text-5xl">
-          Fra starter til ditt bord — på tre dager
-        </h2>
-
-        {/* Large bread image */}
-        <div className="relative mt-12">
+        <div className="about-layout">
           <img
-            src={`${import.meta.env.BASE_URL}images/bakery-about.jpg`}
-            alt="Surdeigsbrød bakt hos The Calm Nest"
-            className="aspect-[16/9] w-full object-cover"
+            className="about-portrait"
+            src={`${base}images/70.jpg`}
+            alt="Maria fra The Calm Nest"
           />
 
-          <span className="absolute left-5 top-5 bg-[#faf8f3] px-5 py-3 text-[0.65rem] uppercase tracking-[0.2em] text-[#77776e]">
-            Bakt her
-          </span>
+          <div className="about-copy">
+            <h3>Hei, jeg heter Maria.</h3>
+
+            <p>
+              Jeg er medgründer av The Calm Nest. Etter mange år innen
+              markedsføring ser hverdagen min ganske annerledes ut i dag.
+              Jeg er mamma til fire, kone og småbruker – og én dag i uken
+              forvandles hjemmet vårt til et lite surdeigsbakeri.
+            </p>
+
+            <p>
+              Jeg tror på langsom mat, enkle råvarer og at et godt brød
+              kan gjøre en helt vanlig dag litt finere. For meg begynner
+              god mat med gode råvarer. Derfor velger jeg økologisk så
+              langt det lar seg gjøre – både på vårt eget kjøkken og i
+              bakeriet – og lager maten fra bunnen av, med tid og omtanke.
+            </p>
+
+            <p>
+              Hvert brød begynner tre dager før det er hos deg: mating av
+              surdeigsstarteren, lang kaldheving og steking fredag morgen.
+              Jeg baker med økologisk mel, uten unødvendige
+              tilsetningsstoffer og med råvarer jeg stoler på.
+            </p>
+
+            <p>
+              Ved siden av bakeriet legger hønsene våre ferske egg året
+              rundt, og biene våre gir oss honning fra blomster og enger
+              rundt gården. Her finner du også et lite utvalg hjemmelagde
+              varer – alt laget i liten skala, med den samme omtanken for
+              gode råvarer og kvalitet.
+            </p>
+          </div>
         </div>
 
-        {/* Three paragraphs */}
-        <div className="mt-12 max-w-4xl space-y-6 text-base leading-8 text-[#6f7068]">
-          <p>
-            The Calm Nest startet med en surdeigsstarter, en hønsflokk og en
-            overbevisning om at ekte mat tar tid. Fra vår gård i Nannestad
-            baker vi én gang i uken — og kun én gang — fordi godt brød ikke
-            kan skyndes.
-          </p>
-
-          <p>
-            Hvert brød begynner tre dager før det er hos deg: mating av
-            starteren, lang kaldheving og steking fredag morgen. Vi bruker
-            økologisk mel, ingen tilsetningsstoffer og råvarer vi stoler på.
-          </p>
-
-          <p>
-            Ved siden av brødet legger hønsene våre egg året rundt, og i
-            gårdsbutikken har vi et lite utvalg hjemmelagde varer — laget på
-            samme ærlige måte.
-          </p>
-        </div>
+        <img
+          className="about-detail"
+          src={`${base}images/80.jpg`}
+          alt="Hjemmelaget brød fra The Calm Nest"
+        />
       </div>
     </section>
   );

@@ -1,73 +1,60 @@
+const base = import.meta.env.BASE_URL;
+
 const products = [
   {
+    name: "Rørt sommerhonning",
+    price: "450 g · 160 kr | 1 kg · 300 kr",
+    text:
+      "Fra våre egne bier. Rørt til en myk, kremet konsistens, med smak og duft av sommerens blomster rundt gården.",
+  },
+  {
     name: "Friske frittgående egg",
-    description:
-      "Fra våre egne høner, samlet daglig. Spør om tilgjengelighet.",
+    price: "180 kr per brett",
+    text:
+      "Fra våre egne høner, samlet daglig. Spør om tilgjengelighet denne uken.",
   },
   {
     name: "Tørket surdeigsstarter",
-    description:
-      "Vår aktive starter, tørket og klar til å vekke hjemme. Inkluderer veiledning.",
+    text:
+      "Vår aktive starter, tørket og klar til å vekkes hjemme. Inkluderer veiledning.",
   },
   {
-    name: "Surdeig pannekakemix",
-    description:
-      "Ferdig blandet med tørket starter. Bare tilsett vann, egg og smør.",
-  },
-  {
-    name: "Fullkornsblandinger",
-    description:
-      "Sesongbasert. Spør hva som er tilgjengelig denne uken.",
+    name: "Surdeigspannekakemix",
+    text:
+      "Ferdig blandet med tørket starter. Bare tilsett melk, egg og smør.",
   },
 ];
 
 export function FarmShop() {
   return (
-    <section
-      id="farm-shop"
-      className="border-t border-[#d9d0be] px-6 py-20 md:px-10 md:py-28"
-    >
-      <div className="mx-auto max-w-[1040px]">
-        <p className="text-[0.7rem] font-semibold uppercase tracking-[0.22em] text-[#8b7653]">
-          Alltid tilgjengelig
-        </p>
+    <section className="section farm-shop">
+      <div className="content">
+        <p className="eyebrow">GÅRDSVARER</p>
+        <h2>Fra gårdsbutikken</h2>
+        <p className="section-intro">Et lite utvalg hjemmelagde varer.</p>
 
-        <h2 className="mt-6 font-serif text-4xl text-[#332b22] md:text-5xl">
-          Fra gårdsbutikken
-        </h2>
+        <div className="farm-products">
+          {products.map((product) => (
+            <article key={product.name}>
+              <div>
+                <h3>{product.name}</h3>
+                <p>{product.text}</p>
+              </div>
 
-        <p className="mt-5 max-w-2xl text-base leading-8 text-[#6f7068]">
-          Et lite utvalg hjemmelagde varer — bestilles ved siden av
-          brødbestillingen din.
-        </p>
-
-        <div className="mt-12 border border-[#d9d0be]">
-          {products.map((product, index) => (
-            <article
-              key={product.name}
-              className={`px-7 py-8 md:px-10 ${
-                index < products.length - 1
-                  ? "border-b border-[#e2dacb]"
-                  : ""
-              }`}
-            >
-              <h3 className="font-serif text-2xl text-[#332b22]">
-                {product.name}
-              </h3>
-
-              <p className="mt-3 max-w-3xl text-sm leading-7 text-[#77776e]">
-                {product.description}
-              </p>
+              {product.price && <strong>{product.price}</strong>}
             </article>
           ))}
         </div>
 
-        <a
-          href="#ordering"
-          className="mt-10 inline-flex border border-[#8b7653] px-7 py-4 text-xs uppercase tracking-[0.18em] text-[#6f5938]"
-        >
-          Bestill gårdsbutikkvarer
-        </a>
+        <div className="photo-grid">
+          <img src={`${base}images/40.jpg`} alt="Ferske egg fra gården" />
+          <img src={`${base}images/50.jpg`} alt="Surdeigsbrød med frø" />
+          <img
+            className="photo-grid-wide"
+            src={`${base}images/60.jpg`}
+            alt="Nybakt surdeigsbrød"
+          />
+        </div>
       </div>
     </section>
   );
