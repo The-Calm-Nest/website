@@ -1,9 +1,12 @@
 {
   "name": "the-calm-nest",
+  "main": "src/worker.ts",
   "compatibility_date": "2026-09-14",
 
   "assets": {
-    "directory": "./dist"
+    "directory": "./dist",
+    "binding": "ASSETS",
+    "not_found_handling": "single-page-application"
   },
 
   "d1_databases": [
