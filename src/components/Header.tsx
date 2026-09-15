@@ -5,7 +5,7 @@ export function Header() {
     <header className="site-header">
       <div className="header-inner">
         <a className="brand" href="#top">
-          <img src={`${base}images/10.jpg`} alt="" />
+          <img src={`${base}images/10-nobg.png`} alt="" />
           <span>The Calm Nest</span>
         </a>
 

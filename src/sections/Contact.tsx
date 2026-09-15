@@ -27,7 +27,7 @@ export function Contact() {
         </div>
 
         <div className="footer-brand">
-          <img src={`${base}images/10.jpg`} alt="The Calm Nest" />
+          <img src={`${base}images/10-nobg.png`} alt="The Calm Nest" />
           <div>
             <strong>The Calm Nest</strong>
             <span>Nannestad, Norge</span>
