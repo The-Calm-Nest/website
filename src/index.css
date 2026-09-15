@@ -961,3 +961,17 @@ a {
     padding: 24px;
   }
 }
+
+.admin-save-actions {
+  display: flex;
+  align-items: center;
+  gap: 16px;
+}
+
+.admin-save-success {
+  color: #dce8d3;
+}
+
+.admin-save-error {
+  color: #ffd0ca;
+}
