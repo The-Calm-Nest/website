@@ -16,5 +16,12 @@
       "database_name": "the-calm-nest-db",
       "database_id": "0629c0cd-9b16-47bc-84ef-250390104b15"
     }
-  ]
+  ],
+
+  "secrets": {
+    "required": [
+      "ADMIN_PASSWORD",
+      "SESSION_SECRET"
+    ]
+  }
 }
