@@ -73,7 +73,9 @@ export function Admin() {
       });
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
+        const data = await response
+        .json<{ error?: string }>()
+        .catch(() => null);
 
         setError(data?.error ?? "Feil passord.");
         return;
@@ -161,7 +163,9 @@ export function Admin() {
       }
 
       if (!response.ok) {
-        const data = await response.json().catch(() => null);
+        const data = await response
+        .json<{ error?: string }>()
+        .catch(() => null);
 
         throw new Error(
           data?.error ?? "Kunne ikke lagre menyen."
@@ -394,13 +398,11 @@ export function Admin() {
                     step="1"
                     value={item.price ?? ""}
                     onChange={(event) =>
-                      updateItem(
+                    updateItem(
                         item.id,
                         "price",
-                        event.target.value === ""
-                          ? undefined
-                          : Number(event.target.value)
-                      )
+                        Number(event.target.value)
+                    )
                     }
                   />
                 </label>
