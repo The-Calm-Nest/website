@@ -1,8 +1,4 @@
-import {
-  useEffect,
-  useState,
-} from "react";
-
+import { useEffect, useState } from "react";
 import type { MenuItem } from "../types/menu";
 
 type AdminMenuResponse = {
@@ -11,44 +7,31 @@ type AdminMenuResponse = {
   items: MenuItem[];
 };
 
+const CATEGORIES = [
+  "SURDEIGSBRØD",
+  "MØRKT RUGBRØD",
+  "BAKVERK",
+  "UKENS GRANOLA — 300 G",
+];
+
 export function Admin() {
-  const [password, setPassword] =
-    useState("");
+  const [password, setPassword] = useState("");
+  const [menu, setMenu] = useState<AdminMenuResponse | null>(null);
 
-  const [menu, setMenu] =
-    useState<AdminMenuResponse | null>(
-      null
-    );
+  const [checking, setChecking] = useState(true);
+  const [loggingIn, setLoggingIn] = useState(false);
+  const [saving, setSaving] = useState(false);
+  const [dirty, setDirty] = useState(false);
 
-  const [checking, setChecking] =
-    useState(true);
-
-  const [loggingIn, setLoggingIn] =
-    useState(false);
-
-  const [saving, setSaving] =
-    useState(false);
-
-  const [dirty, setDirty] =
-    useState(false);
-
-  const [error, setError] =
-    useState("");
-
-  const [
-    saveMessage,
-    setSaveMessage,
-  ] = useState("");
+  const [error, setError] = useState("");
+  const [saveMessage, setSaveMessage] = useState("");
 
   async function loadMenu() {
     try {
-      const response = await fetch(
-        "/api/admin/menu",
-        {
-          credentials: "same-origin",
-          cache: "no-store",
-        }
-      );
+      const response = await fetch("/api/admin/menu", {
+        credentials: "same-origin",
+        cache: "no-store",
+      });
 
       if (response.status === 401) {
         setMenu(null);
@@ -56,13 +39,10 @@ export function Admin() {
       }
 
       if (!response.ok) {
-        throw new Error(
-          "Kunne ikke hente menyen."
-        );
+        throw new Error("Kunne ikke hente menyen.");
       }
 
-      const data: AdminMenuResponse =
-        await response.json();
+      const data: AdminMenuResponse = await response.json();
 
       setMenu(data);
       setDirty(false);
@@ -70,11 +50,7 @@ export function Admin() {
       return true;
     } catch (err) {
       console.error(err);
-
-      setError(
-        "Kunne ikke hente menyen."
-      );
-
+      setError("Kunne ikke hente menyen.");
       return false;
     }
   }
@@ -88,75 +64,47 @@ export function Admin() {
     checkSession();
   }, []);
 
-  /*
-   * Warn if Maria tries to close/reload
-   * the page with unsaved changes.
-   */
   useEffect(() => {
-    function beforeUnload(
-      event: BeforeUnloadEvent
-    ) {
+    function beforeUnload(event: BeforeUnloadEvent) {
       if (!dirty) return;
-
       event.preventDefault();
     }
 
-    window.addEventListener(
-      "beforeunload",
-      beforeUnload
-    );
+    window.addEventListener("beforeunload", beforeUnload);
 
     return () => {
-      window.removeEventListener(
-        "beforeunload",
-        beforeUnload
-      );
+      window.removeEventListener("beforeunload", beforeUnload);
     };
   }, [dirty]);
 
-  async function handleLogin(
-    event: React.FormEvent
-  ) {
+  async function handleLogin(event: React.FormEvent) {
     event.preventDefault();
 
     setLoggingIn(true);
     setError("");
 
     try {
-      const response = await fetch(
-        "/api/admin/login",
-        {
-          method: "POST",
-          credentials: "same-origin",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            password,
-          }),
-        }
-      );
+      const response = await fetch("/api/admin/login", {
+        method: "POST",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ password }),
+      });
 
       if (!response.ok) {
         const data = await response
-          .json<{
-            error?: string;
-          }>()
+          .json<{ error?: string }>()
           .catch(() => null);
 
-        setError(
-          data?.error ??
-            "Feil passord."
-        );
-
+        setError(data?.error ?? "Feil passord.");
         return;
       }
 
       setPassword("");
 
-      const loaded =
-        await loadMenu();
+      const loaded = await loadMenu();
 
       if (!loaded) {
         setError(
@@ -165,10 +113,7 @@ export function Admin() {
       }
     } catch (err) {
       console.error(err);
-
-      setError(
-        "Kunne ikke logge inn."
-      );
+      setError("Kunne ikke logge inn.");
     } finally {
       setLoggingIn(false);
     }
@@ -185,13 +130,10 @@ export function Admin() {
     }
 
     try {
-      await fetch(
-        "/api/admin/logout",
-        {
-          method: "POST",
-          credentials: "same-origin",
-        }
-      );
+      await fetch("/api/admin/logout", {
+        method: "POST",
+        credentials: "same-origin",
+      });
     } finally {
       setMenu(null);
       setPassword("");
@@ -207,9 +149,7 @@ export function Admin() {
     setError("");
   }
 
-  function updateItem<
-    K extends keyof MenuItem
-  >(
+  function updateItem<K extends keyof MenuItem>(
     id: string,
     field: K,
     value: MenuItem[K]
@@ -220,68 +160,45 @@ export function Admin() {
 
     setMenu({
       ...menu,
-      items: menu.items.map(
-        (item) =>
-          item.id === id
-            ? {
-                ...item,
-                [field]: value,
-              }
-            : item
+      items: menu.items.map((item) =>
+        item.id === id
+          ? {
+              ...item,
+              [field]: value,
+            }
+          : item
       ),
     });
   }
 
-  /*
-   * Normalise order internally.
-   *
-   * Maria never needs to know about
-   * 10, 20, 30...
-   */
-  function normaliseOrder(
-    items: MenuItem[]
-  ) {
-    return items.map(
-      (item, index) => ({
-        ...item,
-        order: (index + 1) * 10,
-      })
-    );
+  function normaliseOrder(items: MenuItem[]) {
+    return items.map((item, index) => ({
+      ...item,
+      order: (index + 1) * 10,
+    }));
   }
 
-  function moveItem(
-    index: number,
-    direction: -1 | 1
-  ) {
+  function moveItem(index: number, direction: -1 | 1) {
     if (!menu) return;
 
-    const targetIndex =
-      index + direction;
+    const targetIndex = index + direction;
 
-    if (
-      targetIndex < 0 ||
-      targetIndex >=
-        menu.items.length
-    ) {
+    if (targetIndex < 0 || targetIndex >= menu.items.length) {
       return;
     }
 
-    const items = [
-      ...menu.items,
-    ];
+    const items = [...menu.items];
 
-    [items[index], items[targetIndex]] =
-      [
-        items[targetIndex],
-        items[index],
-      ];
+    [items[index], items[targetIndex]] = [
+      items[targetIndex],
+      items[index],
+    ];
 
     changed();
 
     setMenu({
       ...menu,
-      items:
-        normaliseOrder(items),
+      items: normaliseOrder(items),
     });
   }
 
@@ -290,58 +207,41 @@ export function Admin() {
 
     const newProduct: MenuItem = {
       id: crypto.randomUUID(),
-      category:
-        menu.items.at(-1)
-          ?.category ??
-        "SURDEIGSBRØD",
+      category: "SURDEIGSBRØD",
       name: "Nytt produkt",
       description: "",
       price: 0,
-      priceWithSeeds:
-        undefined,
+      priceWithSeeds: undefined,
       extraText: "",
       quantity: "",
       badge: "",
       visible: true,
-      order:
-        (menu.items.length + 1) *
-        10,
+      order: (menu.items.length + 1) * 10,
     };
 
     changed();
 
     setMenu({
       ...menu,
-      items: [
-        ...menu.items,
-        newProduct,
-      ],
+      items: [...menu.items, newProduct],
     });
   }
 
-  function deleteProduct(
-    item: MenuItem
-  ) {
+  function deleteProduct(item: MenuItem) {
     if (!menu) return;
 
-    const confirmed =
-      window.confirm(
-        `Vil du slette «${item.name}»?\n\nProduktet slettes først permanent når du trykker «Lagre meny».`
-      );
+    const confirmed = window.confirm(
+      `Vil du slette «${item.name}»?\n\nProduktet slettes først permanent når du trykker «Lagre meny».`
+    );
 
-    if (!confirmed) {
-      return;
-    }
+    if (!confirmed) return;
 
     changed();
 
     setMenu({
       ...menu,
       items: normaliseOrder(
-        menu.items.filter(
-          (candidate) =>
-            candidate.id !== item.id
-        )
+        menu.items.filter((candidate) => candidate.id !== item.id)
       ),
     });
   }
@@ -354,57 +254,37 @@ export function Admin() {
     setSaveMessage("");
 
     try {
-      const normalisedItems =
-        normaliseOrder(
-          menu.items
-        );
+      const normalisedItems = normaliseOrder(menu.items);
 
-      const response = await fetch(
-        "/api/admin/menu",
-        {
-          method: "PUT",
-          credentials:
-            "same-origin",
-          headers: {
-            "Content-Type":
-              "application/json",
-          },
-          body: JSON.stringify({
-            published:
-              menu.published,
-            items:
-              normalisedItems,
-          }),
-        }
-      );
+      const response = await fetch("/api/admin/menu", {
+        method: "PUT",
+        credentials: "same-origin",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          published: menu.published,
+          items: normalisedItems,
+        }),
+      });
 
-      if (
-        response.status === 401
-      ) {
+      if (response.status === 401) {
         setMenu(null);
-
-        setError(
-          "Økten har utløpt. Logg inn på nytt."
-        );
-
+        setError("Økten har utløpt. Logg inn på nytt.");
         return;
       }
 
       if (!response.ok) {
         const data = await response
-          .json<{
-            error?: string;
-          }>()
+          .json<{ error?: string }>()
           .catch(() => null);
 
         throw new Error(
-          data?.error ??
-            "Kunne ikke lagre menyen."
+          data?.error ?? "Kunne ikke lagre menyen."
         );
       }
 
-      const loaded =
-        await loadMenu();
+      const loaded = await loadMenu();
 
       if (!loaded) {
         throw new Error(
@@ -413,10 +293,7 @@ export function Admin() {
       }
 
       setDirty(false);
-
-      setSaveMessage(
-        "Menyen er lagret."
-      );
+      setSaveMessage("Menyen er lagret.");
     } catch (err) {
       console.error(err);
 
@@ -430,6 +307,19 @@ export function Admin() {
     }
   }
 
+  function formatUpdatedAt(value: string | null) {
+    if (!value) return null;
+
+    const date = new Date(`${value.replace(" ", "T")}Z`);
+
+    if (Number.isNaN(date.getTime())) return null;
+
+    return new Intl.DateTimeFormat("nb-NO", {
+      dateStyle: "medium",
+      timeStyle: "short",
+    }).format(date);
+  }
+
   if (checking) {
     return (
       <main className="admin-page">
@@ -440,65 +330,30 @@ export function Admin() {
     );
   }
 
-  /*
-   * LOGIN
-   */
   if (!menu) {
     return (
       <main className="admin-page">
         <div className="admin-login">
-          <p className="eyebrow">
-            THE CALM NEST
-          </p>
+          <p className="eyebrow">THE CALM NEST</p>
+          <h1>Menyadministrasjon</h1>
+          <p>Logg inn for å oppdatere ukens meny.</p>
 
-          <h1>
-            Menyadministrasjon
-          </h1>
-
-          <p>
-            Logg inn for å
-            oppdatere ukens meny.
-          </p>
-
-          <form
-            onSubmit={
-              handleLogin
-            }
-          >
+          <form onSubmit={handleLogin}>
             <label>
               Passord
-
               <input
                 type="password"
                 value={password}
-                onChange={(
-                  event
-                ) =>
-                  setPassword(
-                    event.target
-                      .value
-                  )
-                }
+                onChange={(event) => setPassword(event.target.value)}
                 autoComplete="current-password"
                 autoFocus
               />
             </label>
 
-            {error && (
-              <p className="admin-error">
-                {error}
-              </p>
-            )}
+            {error && <p className="admin-error">{error}</p>}
 
-            <button
-              type="submit"
-              disabled={
-                loggingIn
-              }
-            >
-              {loggingIn
-                ? "Logger inn..."
-                : "Logg inn"}
+            <button type="submit" disabled={loggingIn}>
+              {loggingIn ? "Logger inn..." : "Logg inn"}
             </button>
           </form>
         </div>
@@ -506,355 +361,258 @@ export function Admin() {
     );
   }
 
-  /*
-   * ADMIN
-   */
+  const updatedAt = formatUpdatedAt(menu.updatedAt);
+
   return (
     <main className="admin-page">
       <div className="admin-container">
         <header className="admin-header">
           <div>
-            <p className="eyebrow">
-              THE CALM NEST
-            </p>
-
-            <h1>
-              Ukens meny
-            </h1>
+            <p className="eyebrow">THE CALM NEST</p>
+            <h1>Ukens meny</h1>
           </div>
 
           <button
             type="button"
             className="admin-secondary-button"
-            onClick={
-              handleLogout
-            }
+            onClick={handleLogout}
           >
             Logg ut
           </button>
         </header>
 
         <div className="admin-publish">
-          <label>
+          <label className="admin-publish-toggle">
             <input
               type="checkbox"
-              checked={
-                menu.published
-              }
-              onChange={(
-                event
-              ) => {
+              checked={menu.published}
+              onChange={(event) => {
                 changed();
 
                 setMenu({
                   ...menu,
-                  published:
-                    event.target
-                      .checked,
+                  published: event.target.checked,
                 });
               }}
             />
 
             <span>
-              <strong>
-                Ukens meny er
-                publisert
-              </strong>
-
+              <strong>Ukens meny er publisert</strong>
               <small>
-                Slå av denne hvis
-                menyen ikke skal
-                vises på nettsiden.
+                Slå av denne hvis menyen ikke skal vises på nettsiden.
               </small>
             </span>
           </label>
+
+          {updatedAt && (
+            <div className="admin-last-saved">
+              <span>Sist lagret</span>
+              <strong>{updatedAt}</strong>
+            </div>
+          )}
         </div>
 
         {dirty && (
           <div className="admin-unsaved">
-            Du har ulagrede
-            endringer.
+            Du har ulagrede endringer.
           </div>
         )}
 
         <div className="admin-products">
-          {menu.items.map(
-            (item, index) => (
-              <article
-                className="admin-product"
-                key={item.id}
-              >
-                <div className="admin-product-heading">
-                  <label className="admin-visible">
-                    <input
-                      type="checkbox"
-                      checked={
-                        item.visible ??
-                        true
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "visible",
-                          event
-                            .target
-                            .checked
-                        )
-                      }
-                    />
+          {menu.items.map((item, index) => (
+            <article className="admin-product" key={item.id}>
+              <div className="admin-product-heading">
+                <label className="admin-visible">
+                  <input
+                    type="checkbox"
+                    checked={item.visible ?? true}
+                    onChange={(event) =>
+                      updateItem(
+                        item.id,
+                        "visible",
+                        event.target.checked
+                      )
+                    }
+                  />
+                  Vis på menyen
+                </label>
 
-                    Vis på menyen
-                  </label>
+                <div className="admin-product-actions">
+                  <button
+                    type="button"
+                    className="admin-icon-button"
+                    title="Flytt opp"
+                    aria-label={`Flytt ${item.name} opp`}
+                    disabled={index === 0}
+                    onClick={() => moveItem(index, -1)}
+                  >
+                    ↑
+                  </button>
 
-                  <div className="admin-product-actions">
-                    <button
-                      type="button"
-                      className="admin-icon-button"
-                      title="Flytt opp"
-                      aria-label={`Flytt ${item.name} opp`}
-                      disabled={
-                        index === 0
-                      }
-                      onClick={() =>
-                        moveItem(
-                          index,
-                          -1
-                        )
-                      }
-                    >
-                      ↑
-                    </button>
+                  <button
+                    type="button"
+                    className="admin-icon-button"
+                    title="Flytt ned"
+                    aria-label={`Flytt ${item.name} ned`}
+                    disabled={index === menu.items.length - 1}
+                    onClick={() => moveItem(index, 1)}
+                  >
+                    ↓
+                  </button>
 
-                    <button
-                      type="button"
-                      className="admin-icon-button"
-                      title="Flytt ned"
-                      aria-label={`Flytt ${item.name} ned`}
-                      disabled={
-                        index ===
-                        menu.items
-                          .length -
-                          1
-                      }
-                      onClick={() =>
-                        moveItem(
-                          index,
-                          1
-                        )
-                      }
-                    >
-                      ↓
-                    </button>
-
-                    <button
-                      type="button"
-                      className="admin-delete-button"
-                      onClick={() =>
-                        deleteProduct(
-                          item
-                        )
-                      }
-                    >
-                      Slett
-                    </button>
-                  </div>
+                  <button
+                    type="button"
+                    className="admin-delete-button"
+                    onClick={() => deleteProduct(item)}
+                  >
+                    Slett
+                  </button>
                 </div>
+              </div>
 
-                <div className="admin-fields">
-                  <label>
-                    Navn
+              <div className="admin-fields">
+                <label className="admin-field admin-field-wide">
+                  <span>Navn</span>
+                  <input
+                    value={item.name}
+                    onChange={(event) =>
+                      updateItem(item.id, "name", event.target.value)
+                    }
+                  />
+                </label>
 
-                    <input
-                      value={
-                        item.name
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "name",
-                          event
-                            .target
-                            .value
-                        )
-                      }
-                    />
-                  </label>
+                <label className="admin-field admin-field-wide">
+                  <span>Kategori</span>
 
-                  <label>
-                    Kategori
+                  <select
+                    value={item.category}
+                    onChange={(event) =>
+                      updateItem(
+                        item.id,
+                        "category",
+                        event.target.value
+                      )
+                    }
+                  >
+                    {!CATEGORIES.includes(item.category) && (
+                      <option value={item.category}>
+                        {item.category}
+                      </option>
+                    )}
 
-                    <input
-                      value={
-                        item.category
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "category",
-                          event
-                            .target
-                            .value
-                        )
-                      }
-                    />
-                  </label>
+                    {CATEGORIES.map((category) => (
+                      <option value={category} key={category}>
+                        {category}
+                      </option>
+                    ))}
+                  </select>
+                </label>
 
-                  <label className="admin-wide">
-                    Beskrivelse
+                <label className="admin-field admin-field-wide admin-description-field">
+                  <span>Beskrivelse</span>
+                  <textarea
+                    rows={2}
+                    value={item.description ?? ""}
+                    onChange={(event) =>
+                      updateItem(
+                        item.id,
+                        "description",
+                        event.target.value
+                      )
+                    }
+                  />
+                </label>
 
-                    <textarea
-                      rows={3}
-                      value={
-                        item.description ??
-                        ""
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "description",
-                          event
-                            .target
-                            .value
-                        )
-                      }
-                    />
-                  </label>
+                <div className="admin-compact-grid">
+                  <label className="admin-field">
+                    <span>Pris</span>
 
-                  <label>
-                    Pris
-
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      value={
-                        item.price
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "price",
-                          Number(
-                            event
-                              .target
-                              .value
+                    <div className="admin-input-suffix">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={item.price}
+                        onChange={(event) =>
+                          updateItem(
+                            item.id,
+                            "price",
+                            Number(event.target.value)
                           )
-                        )
-                      }
-                    />
+                        }
+                      />
+                      <span>kr</span>
+                    </div>
                   </label>
 
-                  <label>
-                    Pris med frø
+                  <label className="admin-field">
+                    <span>Pris med frø</span>
 
-                    <input
-                      type="number"
-                      min="0"
-                      step="1"
-                      value={
-                        item.priceWithSeeds ??
-                        ""
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "priceWithSeeds",
-                          event
-                            .target
-                            .value ===
-                            ""
-                            ? undefined
-                            : Number(
-                                event
-                                  .target
-                                  .value
-                              )
-                        )
-                      }
-                    />
+                    <div className="admin-input-suffix">
+                      <input
+                        type="number"
+                        min="0"
+                        step="1"
+                        value={item.priceWithSeeds ?? ""}
+                        onChange={(event) =>
+                          updateItem(
+                            item.id,
+                            "priceWithSeeds",
+                            event.target.value === ""
+                              ? undefined
+                              : Number(event.target.value)
+                          )
+                        }
+                      />
+                      <span>kr</span>
+                    </div>
                   </label>
 
-                  <label>
-                    Antall / mengde
-
+                  <label className="admin-field">
+                    <span>Antall / mengde</span>
                     <input
-                      value={
-                        item.quantity ??
-                        ""
-                      }
-                      onChange={(
-                        event
-                      ) =>
+                      value={item.quantity ?? ""}
+                      onChange={(event) =>
                         updateItem(
                           item.id,
                           "quantity",
-                          event
-                            .target
-                            .value
+                          event.target.value
                         )
                       }
                     />
                   </label>
 
-                  <label>
-                    Badge
-
+                  <label className="admin-field">
+                    <span>Badge</span>
                     <input
-                      value={
-                        item.badge ??
-                        ""
-                      }
-                      onChange={(
-                        event
-                      ) =>
+                      value={item.badge ?? ""}
+                      onChange={(event) =>
                         updateItem(
                           item.id,
                           "badge",
-                          event
-                            .target
-                            .value
-                        )
-                      }
-                    />
-                  </label>
-
-                  <label className="admin-wide">
-                    Ekstra tekst
-
-                    <input
-                      value={
-                        item.extraText ??
-                        ""
-                      }
-                      onChange={(
-                        event
-                      ) =>
-                        updateItem(
-                          item.id,
-                          "extraText",
-                          event
-                            .target
-                            .value
+                          event.target.value
                         )
                       }
                     />
                   </label>
                 </div>
-              </article>
-            )
-          )}
+
+                <label className="admin-field admin-field-wide">
+                  <span>Ekstra tekst</span>
+                  <input
+                    value={item.extraText ?? ""}
+                    onChange={(event) =>
+                      updateItem(
+                        item.id,
+                        "extraText",
+                        event.target.value
+                      )
+                    }
+                  />
+                </label>
+              </div>
+            </article>
+          ))}
         </div>
 
         <button
@@ -868,16 +626,12 @@ export function Admin() {
         <div className="admin-save-bar">
           <span>
             {menu.items.length}{" "}
-            {menu.items.length === 1
-              ? "produkt"
-              : "produkter"}
+            {menu.items.length === 1 ? "produkt" : "produkter"}
           </span>
 
           <div className="admin-save-actions">
             {dirty && (
-              <span className="admin-save-unsaved">
-                Ulagret
-              </span>
+              <span className="admin-save-unsaved">Ulagret</span>
             )}
 
             {saveMessage && (
@@ -887,23 +641,15 @@ export function Admin() {
             )}
 
             {error && (
-              <span className="admin-save-error">
-                {error}
-              </span>
+              <span className="admin-save-error">{error}</span>
             )}
 
             <button
               type="button"
-              onClick={
-                handleSave
-              }
-              disabled={
-                saving || !dirty
-              }
+              onClick={handleSave}
+              disabled={saving || !dirty}
             >
-              {saving
-                ? "Lagrer..."
-                : "Lagre meny"}
+              {saving ? "Lagrer..." : "Lagre meny"}
             </button>
           </div>
         </div>
