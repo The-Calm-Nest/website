@@ -240,6 +240,129 @@ export default {
     }
 
     /*
+    * SAVE ADMIN MENU
+    */
+    if (url.pathname === "/api/admin/menu" && request.method === "PUT") {
+    const authenticated = await isAuthenticated(
+        request,
+        env.SESSION_SECRET
+    );
+
+    if (!authenticated) {
+        return json({ error: "Ikke innlogget" }, 401);
+    }
+
+    try {
+        const body = await request.json<{
+        published?: boolean;
+        items?: Array<{
+            id: string;
+            category: string;
+            name: string;
+            description?: string;
+            price: number;
+            priceWithSeeds?: number;
+            extraText?: string;
+            quantity?: string;
+            badge?: string;
+            visible?: boolean;
+            order: number;
+        }>;
+        }>();
+
+        if (
+        typeof body.published !== "boolean" ||
+        !Array.isArray(body.items)
+        ) {
+        return json({ error: "Ugyldige menydata" }, 400);
+        }
+
+        for (const item of body.items) {
+        if (
+            !item.id ||
+            !item.name?.trim() ||
+            !item.category?.trim() ||
+            !Number.isFinite(item.order)
+        ) {
+            return json({ error: "Ugyldig produktdata" }, 400);
+        }
+
+        if (
+            !Number.isFinite(item.price) ||
+            item.price < 0
+        ) {
+            return json({ error: "Ugyldig pris" }, 400);
+        }
+
+        if (
+            item.priceWithSeeds !== undefined &&
+            (!Number.isFinite(item.priceWithSeeds) ||
+            item.priceWithSeeds < 0)
+        ) {
+            return json({ error: "Ugyldig pris med frø" }, 400);
+        }
+        }
+
+        const statements = body.items.map((item) =>
+        env.DB.prepare(
+            `
+            UPDATE menu_items
+            SET
+            category = ?,
+            name = ?,
+            description = ?,
+            price = ?,
+            price_with_seeds = ?,
+            extra_text = ?,
+            quantity = ?,
+            badge = ?,
+            visible = ?,
+            sort_order = ?
+            WHERE id = ?
+            `
+        ).bind(
+            item.category.trim(),
+            item.name.trim(),
+            item.description?.trim() || null,
+            item.price,
+            item.priceWithSeeds ?? null,
+            item.extraText?.trim() || null,
+            item.quantity?.trim() || null,
+            item.badge?.trim() || null,
+            item.visible === false ? 0 : 1,
+            item.order,
+            item.id
+        )
+        );
+
+        statements.push(
+        env.DB.prepare(
+            `
+            UPDATE menu_state
+            SET
+            published = ?,
+            updated_at = datetime('now')
+            WHERE id = 1
+            `
+        ).bind(body.published ? 1 : 0)
+        );
+
+        await env.DB.batch(statements);
+
+        return json({
+        success: true,
+        });
+    } catch (error) {
+        console.error("Failed to save menu:", error);
+
+        return json(
+        { error: "Kunne ikke lagre menyen" },
+        500
+        );
+    }
+    }
+
+    /*
      * PUBLIC MENU
      */
     if (url.pathname === "/api/menu" && request.method === "GET") {
