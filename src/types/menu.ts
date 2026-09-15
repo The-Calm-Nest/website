@@ -8,5 +8,6 @@ export type MenuItem = {
   extraText?: string;
   quantity?: string;
   badge?: string;
+  visible?: boolean;
   order: number;
 };
