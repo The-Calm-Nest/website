@@ -1,4 +1,8 @@
-import { useEffect, useState } from "react";
+import {
+  useEffect,
+  useState,
+} from "react";
+
 import type { MenuItem } from "../types/menu";
 
 type AdminMenuResponse = {
@@ -8,22 +12,43 @@ type AdminMenuResponse = {
 };
 
 export function Admin() {
-  const [password, setPassword] = useState("");
-  const [menu, setMenu] = useState<AdminMenuResponse | null>(null);
+  const [password, setPassword] =
+    useState("");
 
-  const [checking, setChecking] = useState(true);
-  const [loggingIn, setLoggingIn] = useState(false);
-  const [saving, setSaving] = useState(false);
+  const [menu, setMenu] =
+    useState<AdminMenuResponse | null>(
+      null
+    );
 
-  const [error, setError] = useState("");
-  const [saveMessage, setSaveMessage] = useState("");
+  const [checking, setChecking] =
+    useState(true);
+
+  const [loggingIn, setLoggingIn] =
+    useState(false);
+
+  const [saving, setSaving] =
+    useState(false);
+
+  const [dirty, setDirty] =
+    useState(false);
+
+  const [error, setError] =
+    useState("");
+
+  const [
+    saveMessage,
+    setSaveMessage,
+  ] = useState("");
 
   async function loadMenu() {
     try {
-      const response = await fetch("/api/admin/menu", {
-        credentials: "same-origin",
-        cache: "no-store",
-      });
+      const response = await fetch(
+        "/api/admin/menu",
+        {
+          credentials: "same-origin",
+          cache: "no-store",
+        }
+      );
 
       if (response.status === 401) {
         setMenu(null);
@@ -31,16 +56,25 @@ export function Admin() {
       }
 
       if (!response.ok) {
-        throw new Error("Kunne ikke hente menyen.");
+        throw new Error(
+          "Kunne ikke hente menyen."
+        );
       }
 
-      const data: AdminMenuResponse = await response.json();
+      const data: AdminMenuResponse =
+        await response.json();
 
       setMenu(data);
+      setDirty(false);
+
       return true;
     } catch (err) {
       console.error(err);
-      setError("Kunne ikke hente menyen.");
+
+      setError(
+        "Kunne ikke hente menyen."
+      );
+
       return false;
     }
   }
@@ -54,36 +88,75 @@ export function Admin() {
     checkSession();
   }, []);
 
-  async function handleLogin(event: React.FormEvent) {
+  /*
+   * Warn if Maria tries to close/reload
+   * the page with unsaved changes.
+   */
+  useEffect(() => {
+    function beforeUnload(
+      event: BeforeUnloadEvent
+    ) {
+      if (!dirty) return;
+
+      event.preventDefault();
+    }
+
+    window.addEventListener(
+      "beforeunload",
+      beforeUnload
+    );
+
+    return () => {
+      window.removeEventListener(
+        "beforeunload",
+        beforeUnload
+      );
+    };
+  }, [dirty]);
+
+  async function handleLogin(
+    event: React.FormEvent
+  ) {
     event.preventDefault();
 
     setLoggingIn(true);
     setError("");
 
     try {
-      const response = await fetch("/api/admin/login", {
-        method: "POST",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          password,
-        }),
-      });
+      const response = await fetch(
+        "/api/admin/login",
+        {
+          method: "POST",
+          credentials: "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            password,
+          }),
+        }
+      );
 
       if (!response.ok) {
         const data = await response
-        .json<{ error?: string }>()
-        .catch(() => null);
+          .json<{
+            error?: string;
+          }>()
+          .catch(() => null);
 
-        setError(data?.error ?? "Feil passord.");
+        setError(
+          data?.error ??
+            "Feil passord."
+        );
+
         return;
       }
 
       setPassword("");
 
-      const loaded = await loadMenu();
+      const loaded =
+        await loadMenu();
 
       if (!loaded) {
         setError(
@@ -92,44 +165,183 @@ export function Admin() {
       }
     } catch (err) {
       console.error(err);
-      setError("Kunne ikke logge inn.");
+
+      setError(
+        "Kunne ikke logge inn."
+      );
     } finally {
       setLoggingIn(false);
     }
   }
 
   async function handleLogout() {
+    if (
+      dirty &&
+      !window.confirm(
+        "Du har ulagrede endringer. Vil du logge ut likevel?"
+      )
+    ) {
+      return;
+    }
+
     try {
-      await fetch("/api/admin/logout", {
-        method: "POST",
-        credentials: "same-origin",
-      });
+      await fetch(
+        "/api/admin/logout",
+        {
+          method: "POST",
+          credentials: "same-origin",
+        }
+      );
     } finally {
       setMenu(null);
       setPassword("");
       setError("");
       setSaveMessage("");
+      setDirty(false);
     }
   }
 
-  function updateItem<K extends keyof MenuItem>(
+  function changed() {
+    setDirty(true);
+    setSaveMessage("");
+    setError("");
+  }
+
+  function updateItem<
+    K extends keyof MenuItem
+  >(
     id: string,
     field: K,
     value: MenuItem[K]
   ) {
     if (!menu) return;
 
-    setSaveMessage("");
+    changed();
 
     setMenu({
       ...menu,
-      items: menu.items.map((item) =>
-        item.id === id
-          ? {
-              ...item,
-              [field]: value,
-            }
-          : item
+      items: menu.items.map(
+        (item) =>
+          item.id === id
+            ? {
+                ...item,
+                [field]: value,
+              }
+            : item
+      ),
+    });
+  }
+
+  /*
+   * Normalise order internally.
+   *
+   * Maria never needs to know about
+   * 10, 20, 30...
+   */
+  function normaliseOrder(
+    items: MenuItem[]
+  ) {
+    return items.map(
+      (item, index) => ({
+        ...item,
+        order: (index + 1) * 10,
+      })
+    );
+  }
+
+  function moveItem(
+    index: number,
+    direction: -1 | 1
+  ) {
+    if (!menu) return;
+
+    const targetIndex =
+      index + direction;
+
+    if (
+      targetIndex < 0 ||
+      targetIndex >=
+        menu.items.length
+    ) {
+      return;
+    }
+
+    const items = [
+      ...menu.items,
+    ];
+
+    [items[index], items[targetIndex]] =
+      [
+        items[targetIndex],
+        items[index],
+      ];
+
+    changed();
+
+    setMenu({
+      ...menu,
+      items:
+        normaliseOrder(items),
+    });
+  }
+
+  function addProduct() {
+    if (!menu) return;
+
+    const newProduct: MenuItem = {
+      id: crypto.randomUUID(),
+      category:
+        menu.items.at(-1)
+          ?.category ??
+        "SURDEIGSBRØD",
+      name: "Nytt produkt",
+      description: "",
+      price: 0,
+      priceWithSeeds:
+        undefined,
+      extraText: "",
+      quantity: "",
+      badge: "",
+      visible: true,
+      order:
+        (menu.items.length + 1) *
+        10,
+    };
+
+    changed();
+
+    setMenu({
+      ...menu,
+      items: [
+        ...menu.items,
+        newProduct,
+      ],
+    });
+  }
+
+  function deleteProduct(
+    item: MenuItem
+  ) {
+    if (!menu) return;
+
+    const confirmed =
+      window.confirm(
+        `Vil du slette «${item.name}»?\n\nProduktet slettes først permanent når du trykker «Lagre meny».`
+      );
+
+    if (!confirmed) {
+      return;
+    }
+
+    changed();
+
+    setMenu({
+      ...menu,
+      items: normaliseOrder(
+        menu.items.filter(
+          (candidate) =>
+            candidate.id !== item.id
+        )
       ),
     });
   }
@@ -142,42 +354,57 @@ export function Admin() {
     setSaveMessage("");
 
     try {
-      const response = await fetch("/api/admin/menu", {
-        method: "PUT",
-        credentials: "same-origin",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({
-          published: menu.published,
-          items: menu.items,
-        }),
-      });
+      const normalisedItems =
+        normaliseOrder(
+          menu.items
+        );
 
-      if (response.status === 401) {
+      const response = await fetch(
+        "/api/admin/menu",
+        {
+          method: "PUT",
+          credentials:
+            "same-origin",
+          headers: {
+            "Content-Type":
+              "application/json",
+          },
+          body: JSON.stringify({
+            published:
+              menu.published,
+            items:
+              normalisedItems,
+          }),
+        }
+      );
+
+      if (
+        response.status === 401
+      ) {
         setMenu(null);
+
         setError(
           "Økten har utløpt. Logg inn på nytt."
         );
+
         return;
       }
 
       if (!response.ok) {
         const data = await response
-        .json<{ error?: string }>()
-        .catch(() => null);
+          .json<{
+            error?: string;
+          }>()
+          .catch(() => null);
 
         throw new Error(
-          data?.error ?? "Kunne ikke lagre menyen."
+          data?.error ??
+            "Kunne ikke lagre menyen."
         );
       }
 
-      /*
-       * Reload from D1 after saving.
-       * This makes sure the admin interface displays
-       * exactly what is actually stored in the database.
-       */
-      const loaded = await loadMenu();
+      const loaded =
+        await loadMenu();
 
       if (!loaded) {
         throw new Error(
@@ -185,7 +412,11 @@ export function Admin() {
         );
       }
 
-      setSaveMessage("Menyen er lagret.");
+      setDirty(false);
+
+      setSaveMessage(
+        "Menyen er lagret."
+      );
     } catch (err) {
       console.error(err);
 
@@ -199,9 +430,6 @@ export function Admin() {
     }
   }
 
-  /*
-   * Check existing session.
-   */
   if (checking) {
     return (
       <main className="admin-page">
@@ -213,29 +441,43 @@ export function Admin() {
   }
 
   /*
-   * Login screen.
+   * LOGIN
    */
   if (!menu) {
     return (
       <main className="admin-page">
         <div className="admin-login">
-          <p className="eyebrow">THE CALM NEST</p>
-
-          <h1>Menyadministrasjon</h1>
-
-          <p>
-            Logg inn for å oppdatere ukens meny.
+          <p className="eyebrow">
+            THE CALM NEST
           </p>
 
-          <form onSubmit={handleLogin}>
+          <h1>
+            Menyadministrasjon
+          </h1>
+
+          <p>
+            Logg inn for å
+            oppdatere ukens meny.
+          </p>
+
+          <form
+            onSubmit={
+              handleLogin
+            }
+          >
             <label>
               Passord
 
               <input
                 type="password"
                 value={password}
-                onChange={(event) =>
-                  setPassword(event.target.value)
+                onChange={(
+                  event
+                ) =>
+                  setPassword(
+                    event.target
+                      .value
+                  )
                 }
                 autoComplete="current-password"
                 autoFocus
@@ -250,7 +492,9 @@ export function Admin() {
 
             <button
               type="submit"
-              disabled={loggingIn}
+              disabled={
+                loggingIn
+              }
             >
               {loggingIn
                 ? "Logger inn..."
@@ -263,7 +507,7 @@ export function Admin() {
   }
 
   /*
-   * Admin editor.
+   * ADMIN
    */
   return (
     <main className="admin-page">
@@ -274,13 +518,17 @@ export function Admin() {
               THE CALM NEST
             </p>
 
-            <h1>Ukens meny</h1>
+            <h1>
+              Ukens meny
+            </h1>
           </div>
 
           <button
             type="button"
             className="admin-secondary-button"
-            onClick={handleLogout}
+            onClick={
+              handleLogout
+            }
           >
             Logg ut
           </button>
@@ -290,200 +538,348 @@ export function Admin() {
           <label>
             <input
               type="checkbox"
-              checked={menu.published}
-              onChange={(event) => {
-                setSaveMessage("");
+              checked={
+                menu.published
+              }
+              onChange={(
+                event
+              ) => {
+                changed();
 
                 setMenu({
                   ...menu,
-                  published: event.target.checked,
+                  published:
+                    event.target
+                      .checked,
                 });
               }}
             />
 
             <span>
               <strong>
-                Ukens meny er publisert
+                Ukens meny er
+                publisert
               </strong>
 
               <small>
-                Slå av denne hvis menyen ikke
-                skal vises på nettsiden.
+                Slå av denne hvis
+                menyen ikke skal
+                vises på nettsiden.
               </small>
             </span>
           </label>
         </div>
 
+        {dirty && (
+          <div className="admin-unsaved">
+            Du har ulagrede
+            endringer.
+          </div>
+        )}
+
         <div className="admin-products">
-          {menu.items.map((item) => (
-            <article
-              className="admin-product"
-              key={item.id}
-            >
-              <div className="admin-product-heading">
-                <label className="admin-visible">
-                  <input
-                    type="checkbox"
-                    checked={item.visible ?? true}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "visible",
-                        event.target.checked
-                      )
-                    }
-                  />
+          {menu.items.map(
+            (item, index) => (
+              <article
+                className="admin-product"
+                key={item.id}
+              >
+                <div className="admin-product-heading">
+                  <label className="admin-visible">
+                    <input
+                      type="checkbox"
+                      checked={
+                        item.visible ??
+                        true
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "visible",
+                          event
+                            .target
+                            .checked
+                        )
+                      }
+                    />
 
-                  Vis på menyen
-                </label>
+                    Vis på menyen
+                  </label>
 
-                <span>
-                  #{item.order}
-                </span>
-              </div>
+                  <div className="admin-product-actions">
+                    <button
+                      type="button"
+                      className="admin-icon-button"
+                      title="Flytt opp"
+                      aria-label={`Flytt ${item.name} opp`}
+                      disabled={
+                        index === 0
+                      }
+                      onClick={() =>
+                        moveItem(
+                          index,
+                          -1
+                        )
+                      }
+                    >
+                      ↑
+                    </button>
 
-              <div className="admin-fields">
-                <label>
-                  Navn
+                    <button
+                      type="button"
+                      className="admin-icon-button"
+                      title="Flytt ned"
+                      aria-label={`Flytt ${item.name} ned`}
+                      disabled={
+                        index ===
+                        menu.items
+                          .length -
+                          1
+                      }
+                      onClick={() =>
+                        moveItem(
+                          index,
+                          1
+                        )
+                      }
+                    >
+                      ↓
+                    </button>
 
-                  <input
-                    value={item.name}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "name",
-                        event.target.value
-                      )
-                    }
-                  />
-                </label>
+                    <button
+                      type="button"
+                      className="admin-delete-button"
+                      onClick={() =>
+                        deleteProduct(
+                          item
+                        )
+                      }
+                    >
+                      Slett
+                    </button>
+                  </div>
+                </div>
 
-                <label>
-                  Kategori
+                <div className="admin-fields">
+                  <label>
+                    Navn
 
-                  <input
-                    value={item.category}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "category",
-                        event.target.value
-                      )
-                    }
-                  />
-                </label>
+                    <input
+                      value={
+                        item.name
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "name",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
 
-                <label className="admin-wide">
-                  Beskrivelse
+                  <label>
+                    Kategori
 
-                  <textarea
-                    rows={3}
-                    value={item.description ?? ""}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "description",
-                        event.target.value
-                      )
-                    }
-                  />
-                </label>
+                    <input
+                      value={
+                        item.category
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "category",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
 
-                <label>
-                  Pris
+                  <label className="admin-wide">
+                    Beskrivelse
 
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={item.price ?? ""}
-                    onChange={(event) =>
-                    updateItem(
-                        item.id,
-                        "price",
-                        Number(event.target.value)
-                    )
-                    }
-                  />
-                </label>
+                    <textarea
+                      rows={3}
+                      value={
+                        item.description ??
+                        ""
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "description",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
 
-                <label>
-                  Pris med frø
+                  <label>
+                    Pris
 
-                  <input
-                    type="number"
-                    min="0"
-                    step="1"
-                    value={item.priceWithSeeds ?? ""}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "priceWithSeeds",
-                        event.target.value === ""
-                          ? undefined
-                          : Number(event.target.value)
-                      )
-                    }
-                  />
-                </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={
+                        item.price
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "price",
+                          Number(
+                            event
+                              .target
+                              .value
+                          )
+                        )
+                      }
+                    />
+                  </label>
 
-                <label>
-                  Antall / mengde
+                  <label>
+                    Pris med frø
 
-                  <input
-                    value={item.quantity ?? ""}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "quantity",
-                        event.target.value
-                      )
-                    }
-                  />
-                </label>
+                    <input
+                      type="number"
+                      min="0"
+                      step="1"
+                      value={
+                        item.priceWithSeeds ??
+                        ""
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "priceWithSeeds",
+                          event
+                            .target
+                            .value ===
+                            ""
+                            ? undefined
+                            : Number(
+                                event
+                                  .target
+                                  .value
+                              )
+                        )
+                      }
+                    />
+                  </label>
 
-                <label>
-                  Rekkefølge
+                  <label>
+                    Antall / mengde
 
-                  <input
-                    type="number"
-                    step="1"
-                    value={item.order}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "order",
-                        Number(event.target.value)
-                      )
-                    }
-                  />
-                </label>
+                    <input
+                      value={
+                        item.quantity ??
+                        ""
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "quantity",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
 
-                <label className="admin-wide">
-                  Ekstra tekst
+                  <label>
+                    Badge
 
-                  <input
-                    value={item.extraText ?? ""}
-                    onChange={(event) =>
-                      updateItem(
-                        item.id,
-                        "extraText",
-                        event.target.value
-                      )
-                    }
-                  />
-                </label>
-              </div>
-            </article>
-          ))}
+                    <input
+                      value={
+                        item.badge ??
+                        ""
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "badge",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
+
+                  <label className="admin-wide">
+                    Ekstra tekst
+
+                    <input
+                      value={
+                        item.extraText ??
+                        ""
+                      }
+                      onChange={(
+                        event
+                      ) =>
+                        updateItem(
+                          item.id,
+                          "extraText",
+                          event
+                            .target
+                            .value
+                        )
+                      }
+                    />
+                  </label>
+                </div>
+              </article>
+            )
+          )}
         </div>
+
+        <button
+          type="button"
+          className="admin-add-button"
+          onClick={addProduct}
+        >
+          + Legg til produkt
+        </button>
 
         <div className="admin-save-bar">
           <span>
-            {menu.items.length} produkter
+            {menu.items.length}{" "}
+            {menu.items.length === 1
+              ? "produkt"
+              : "produkter"}
           </span>
 
           <div className="admin-save-actions">
+            {dirty && (
+              <span className="admin-save-unsaved">
+                Ulagret
+              </span>
+            )}
+
             {saveMessage && (
               <span className="admin-save-success">
                 {saveMessage}
@@ -498,8 +894,12 @@ export function Admin() {
 
             <button
               type="button"
-              onClick={handleSave}
-              disabled={saving}
+              onClick={
+                handleSave
+              }
+              disabled={
+                saving || !dirty
+              }
             >
               {saving
                 ? "Lagrer..."
