@@ -133,8 +133,16 @@ export default {
       try {
         const body = await request.json<{ password?: string }>();
 
-        if (!body.password || body.password !== env.ADMIN_PASSWORD) {
-          return json({ error: "Ugyldig passord" }, 401);
+        if (!env.ADMIN_PASSWORD) {
+            return json({ error: "ADMIN_PASSWORD mangler i Worker-miljøet" }, 500);
+        }
+
+            if (!env.SESSION_SECRET) {
+            return json({ error: "SESSION_SECRET mangler i Worker-miljøet" }, 500);
+        }
+
+            if (!body.password || body.password !== env.ADMIN_PASSWORD) {
+            return json({ error: "Ugyldig passord" }, 401);
         }
 
         const session = await createSession(env.SESSION_SECRET);
