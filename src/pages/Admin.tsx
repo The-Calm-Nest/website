@@ -583,8 +583,9 @@ export function Admin() {
                   </label>
 
                   <label className="admin-field">
-                    <span>Badge</span>
+                    <span>Merking</span>
                     <input
+                      placeholder="f.eks. Ukens"
                       value={item.badge ?? ""}
                       onChange={(event) =>
                         updateItem(
