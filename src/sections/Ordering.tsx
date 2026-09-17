@@ -1,3 +1,6 @@
+const FACEBOOK_URL =
+  "https://www.facebook.com/share/1AgFWzcDtH/?mibextid=wwXIfr";
+
 export function Ordering() {
   return (
     <section id="ordering" className="ordering-wrap">
@@ -24,23 +27,32 @@ export function Ordering() {
             adresse sendes med ordrebekreftelsen.
           </p>
 
-          <div className="contact-buttons">
-            <a href="https://www.instagram.com/thecalmnest.no/">
-              INSTAGRAM <span>@thecalmnest.no</span>
-            </a>
+          <div className="order-actions">
+            <h3>Send bestilling</h3>
 
-            <a href="#">
-              FACEBOOK <span>The Calm Nest</span>
-            </a>
+            <div className="contact-buttons">
+              <a
+                href="https://www.instagram.com/thecalmnest.no/"
+                target="_blank"
+                rel="noreferrer"
+              >
+                INSTAGRAM <span>@thecalmnest.no</span>
+              </a>
 
-            <a href="mailto:thecalmnest.bakery@gmail.com">
-              E-POST / SMS
-              <span>
-                thecalmnest.bakery@gmail.com
-                <br />
-                +47 945 07 219
-              </span>
-            </a>
+              <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">
+                FACEBOOK <span>The Calm Nest</span>
+              </a>
+
+              <a
+                href="mailto:thecalmnest.bakery@gmail.com?subject=Bestilling%20-%20The%20Calm%20Nest"
+              >
+                E-POST <span>thecalmnest.bakery@gmail.com</span>
+              </a>
+
+              <a href="sms:+4794507219">
+                SMS <span>+47 945 07 219</span>
+              </a>
+            </div>
           </div>
 
           <div className="limited">

@@ -1,4 +1,6 @@
 const base = import.meta.env.BASE_URL;
+const FACEBOOK_URL =
+  "https://www.facebook.com/share/1AgFWzcDtH/?mibextid=wwXIfr";
 
 export function Contact() {
   return (
@@ -15,13 +17,31 @@ export function Contact() {
         <div className="contact-details">
           <p>
             <strong>TELEFON / SMS</strong>
-            <a href="tel:+4794507219">+47 945 07 219</a>
+            <a href="sms:+4794507219">+47 945 07 219</a>
           </p>
 
           <p>
             <strong>E-POST</strong>
             <a href="mailto:thecalmnest.bakery@gmail.com">
               thecalmnest.bakery@gmail.com
+            </a>
+          </p>
+
+          <p>
+            <strong>INSTAGRAM</strong>
+            <a
+              href="https://www.instagram.com/thecalmnest.no/"
+              target="_blank"
+              rel="noreferrer"
+            >
+              @thecalmnest.no
+            </a>
+          </p>
+
+          <p>
+            <strong>FACEBOOK</strong>
+            <a href={FACEBOOK_URL} target="_blank" rel="noreferrer">
+              The Calm Nest
             </a>
           </p>
         </div>

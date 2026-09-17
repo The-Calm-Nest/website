@@ -2,10 +2,10 @@ const base = import.meta.env.BASE_URL;
 
 const products = [
   {
-    name: "Rørt sommerhonning",
-    price: "450 g · 160 kr | 1 kg · 300 kr",
+    name: "Rørt sommerhonning og rørt høsthonning",
+    price: "125 g · 65 kr | 450 g · 160 kr | 1000 g · 300 kr",
     text:
-      "Fra våre egne bier. Rørt til en myk, kremet konsistens, med smak og duft av sommerens blomster rundt gården.",
+      "Fra våre egne bier. Rørt til en myk, kremet konsistens, med smak og duft fra blomstringen rundt gården.",
   },
   {
     name: "Friske frittgående egg",
@@ -14,14 +14,16 @@ const products = [
       "Fra våre egne høner, samlet daglig. Spør om tilgjengelighet denne uken.",
   },
   {
-    name: "Tørket surdeigsstarter",
+    name: "Ekte tørket surdeig",
+    price: "30 g · 139 kr",
     text:
-      "Vår aktive starter, tørket og klar til å vekkes hjemme. Inkluderer veiledning.",
+      "Laget med økologisk hvetemel. Gir ca. 300 g aktiv surdeigsstarter.",
   },
   {
-    name: "Surdeigspannekakemix",
+    name: "Surdeigspannekakemiks",
+    price: "300 g · 89 kr",
     text:
-      "Ferdig blandet med tørket starter. Bare tilsett melk, egg og smør.",
+      "En ferdig blanding med økologisk mel og ekte tørket surdeig. Tilsett bare melk, egg og smør – og nyt luftige, smakfulle pannekaker til frokost eller helgekos.",
   },
 ];
 
@@ -41,14 +43,14 @@ export function FarmShop() {
                 <p>{product.text}</p>
               </div>
 
-              {product.price && <strong>{product.price}</strong>}
+              <strong>{product.price}</strong>
             </article>
           ))}
         </div>
 
         <div className="photo-grid">
-          <img src={`${base}images/40.jpg`} alt="Ferske egg fra gården" />
-          <img src={`${base}images/50.jpg`} alt="Surdeigsbrød med frø" />
+          <img src={`${base}images/100.jpg`} alt="Friske egg fra gården" />
+          <img src={`${base}images/90.jpg`} alt="Rørt honning fra gården" />
           <img
             className="photo-grid-wide"
             src={`${base}images/60.jpg`}

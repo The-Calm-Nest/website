@@ -13,8 +13,8 @@ export function Hero() {
           </h1>
 
           <p className="hero-copy">
-            Surdeigsbrød og gårdsvarer laget fra bunnen av, med gode
-            råvarer, tid og omtanke.
+            Surdeigsbrød og gårdsvarer fra eget småbruk – med gode råvarer,
+            tid og omtanke.
           </p>
 
           <a className="primary-button" href="#menu">
