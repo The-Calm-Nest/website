@@ -215,6 +215,8 @@ export function Admin() {
       extraText: "",
       quantity: "",
       badge: "",
+      ingredients: "",
+      allergens: "",
       visible: true,
       order: (menu.items.length + 1) * 10,
     };
@@ -519,6 +521,30 @@ export function Admin() {
                         "description",
                         event.target.value
                       )
+                    }
+                  />
+                </label>
+
+                <label className="admin-field admin-field-wide admin-description-field">
+                  <span>Ingredienser</span>
+                  <textarea
+                    rows={2}
+                    placeholder="Skriv ingrediensene slik de skal vises på nettsiden"
+                    value={item.ingredients ?? ""}
+                    onChange={(event) =>
+                      updateItem(item.id, "ingredients", event.target.value)
+                    }
+                  />
+                </label>
+
+                <label className="admin-field admin-field-wide admin-description-field">
+                  <span>Allergener</span>
+                  <textarea
+                    rows={2}
+                    placeholder="Skriv allergeninformasjonen slik den skal vises på nettsiden"
+                    value={item.allergens ?? ""}
+                    onChange={(event) =>
+                      updateItem(item.id, "allergens", event.target.value)
                     }
                   />
                 </label>

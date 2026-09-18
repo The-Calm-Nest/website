@@ -17,6 +17,8 @@ type MenuRow = {
   extra_text: string | null;
   quantity: string | null;
   badge: string | null;
+  ingredients: string | null;
+  allergens: string | null;
   visible: number;
   sort_order: number;
 };
@@ -31,6 +33,8 @@ type AdminMenuItem = {
   extraText?: string;
   quantity?: string;
   badge?: string;
+  ingredients?: string;
+  allergens?: string;
   visible?: boolean;
   order: number;
 };
@@ -160,6 +164,8 @@ function mapMenuRow(row: MenuRow) {
     extraText: row.extra_text ?? undefined,
     quantity: row.quantity ?? undefined,
     badge: row.badge ?? undefined,
+    ingredients: row.ingredients ?? undefined,
+    allergens: row.allergens ?? undefined,
     visible: row.visible === 1,
     order: row.sort_order,
   };
@@ -311,6 +317,8 @@ export default {
             extra_text,
             quantity,
             badge,
+            ingredients,
+            allergens,
             visible,
             sort_order
           FROM menu_items
@@ -471,10 +479,12 @@ export default {
                 extra_text,
                 quantity,
                 badge,
+                ingredients,
+                allergens,
                 visible,
                 sort_order
               )
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
               ON CONFLICT(id) DO UPDATE SET
                 category = excluded.category,
@@ -485,6 +495,8 @@ export default {
                 extra_text = excluded.extra_text,
                 quantity = excluded.quantity,
                 badge = excluded.badge,
+                ingredients = excluded.ingredients,
+                allergens = excluded.allergens,
                 visible = excluded.visible,
                 sort_order = excluded.sort_order
               `
@@ -501,6 +513,8 @@ export default {
               item.quantity?.trim() ||
                 null,
               item.badge?.trim() || null,
+              item.ingredients?.trim() || null,
+              item.allergens?.trim() || null,
               item.visible === false
                 ? 0
                 : 1,
@@ -631,6 +645,8 @@ export default {
             extra_text,
             quantity,
             badge,
+            ingredients,
+            allergens,
             visible,
             sort_order
           FROM menu_items

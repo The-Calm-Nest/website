@@ -5,6 +5,10 @@ type Props = {
 };
 
 export function MenuItem({ item }: Props) {
+  const hasIngredientInfo = Boolean(
+    item.ingredients?.trim() || item.allergens?.trim()
+  );
+
   return (
     <article className="menu-item">
       <div className="menu-copy">
@@ -17,6 +21,26 @@ export function MenuItem({ item }: Props) {
         {item.description && <p>{item.description}</p>}
         {item.extraText && (
           <p className="menu-extra">{item.extraText}</p>
+        )}
+
+        {hasIngredientInfo && (
+          <details className="menu-details">
+            <summary>Ingredienser og allergener</summary>
+            <div className="menu-details-content">
+              {item.ingredients?.trim() && (
+                <div>
+                  <strong>Ingredienser</strong>
+                  <p>{item.ingredients}</p>
+                </div>
+              )}
+              {item.allergens?.trim() && (
+                <div className="menu-allergens">
+                  <strong>Allergener</strong>
+                  <p>{item.allergens}</p>
+                </div>
+              )}
+            </div>
+          </details>
         )}
       </div>
 
