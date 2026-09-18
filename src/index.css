@@ -1208,3 +1208,138 @@ a {
 .menu-allergens strong { color: var(--accent-dark); }
 .menu-allergens p { color: var(--ink); font-weight: 600; }
 @media (max-width: 760px) { .menu-details { margin-top: .85rem; } .menu-details summary { font-size: .72rem; } .menu-details-content { padding: .85rem; } .menu-details-content p { font-size: .82rem; } }
+
+
+/* -------------------------------------------------------
+   LEGAL PAGES + FOOTER LINKS
+------------------------------------------------------- */
+
+.footer-legal {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  margin-top: 2rem;
+  padding-top: 1.25rem;
+  border-top: 1px solid rgba(255, 255, 255, 0.14);
+  font-size: 0.78rem;
+}
+
+.footer-legal a {
+  color: inherit;
+  opacity: 0.78;
+  text-decoration: none;
+}
+
+.footer-legal a:hover {
+  opacity: 1;
+  text-decoration: underline;
+}
+
+.footer-legal span {
+  opacity: 0.45;
+}
+
+.legal-page {
+  min-height: 100vh;
+  padding: 4rem 1.5rem 6rem;
+  background: var(--cream);
+  color: var(--ink);
+}
+
+.legal-shell {
+  width: min(760px, 100%);
+  margin: 0 auto;
+}
+
+.legal-back {
+  display: inline-block;
+  margin-bottom: 3.5rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.legal-back:hover {
+  color: var(--accent);
+}
+
+.legal-page h1 {
+  margin: 0.2rem 0 0.5rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: clamp(2.6rem, 7vw, 4.6rem);
+  font-weight: 400;
+  line-height: 1;
+}
+
+.legal-updated {
+  margin: 0 0 3rem;
+  color: var(--muted);
+  font-size: 0.82rem;
+}
+
+.legal-page section {
+  margin-top: 2.6rem;
+}
+
+.legal-page h2 {
+  margin: 0 0 0.9rem;
+  font-family: Georgia, "Times New Roman", serif;
+  font-size: 1.45rem;
+  font-weight: 500;
+  line-height: 1.25;
+}
+
+.legal-page p,
+.legal-page li {
+  color: var(--muted);
+  font-size: 0.96rem;
+  line-height: 1.75;
+}
+
+.legal-page p {
+  margin: 0 0 1rem;
+}
+
+.legal-page ul {
+  margin: 0.5rem 0 1.25rem;
+  padding-left: 1.3rem;
+}
+
+.legal-page li {
+  margin-bottom: 0.35rem;
+}
+
+.legal-page a:not(.legal-back) {
+  color: var(--accent-dark);
+  text-decoration: underline;
+  text-underline-offset: 0.15em;
+}
+
+@media (max-width: 760px) {
+  .legal-page {
+    padding: 2rem 1.1rem 4rem;
+  }
+
+  .legal-back {
+    margin-bottom: 2.5rem;
+  }
+
+  .legal-updated {
+    margin-bottom: 2.2rem;
+  }
+
+  .legal-page section {
+    margin-top: 2.2rem;
+  }
+
+  .legal-page h2 {
+    font-size: 1.3rem;
+  }
+
+  .legal-page p,
+  .legal-page li {
+    font-size: 0.9rem;
+    line-height: 1.7;
+  }
+}

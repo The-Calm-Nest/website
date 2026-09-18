@@ -7,10 +7,22 @@ import { RegularOrders } from "./sections/RegularOrders";
 import { About } from "./sections/About";
 import { Contact } from "./sections/Contact";
 import { Admin } from "./pages/Admin";
+import { Privacy } from "./pages/Privacy";
+import { Terms } from "./pages/Terms";
 
 export default function App() {
-    if (window.location.pathname === "/admin") {
+  const path = window.location.pathname;
+
+  if (path === "/admin") {
     return <Admin />;
+  }
+
+  if (path === "/personvern") {
+    return <Privacy />;
+  }
+
+  if (path === "/kjopsvilkar") {
+    return <Terms />;
   }
 
   return (

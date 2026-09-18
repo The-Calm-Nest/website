@@ -54,6 +54,12 @@ export function Contact() {
             <span>thecalmnest.bakery@gmail.com</span>
           </div>
         </div>
+
+        <nav className="footer-legal" aria-label="Juridisk informasjon">
+          <a href="/personvern">Personvern</a>
+          <span aria-hidden="true">·</span>
+          <a href="/kjopsvilkar">Kjøpsvilkår</a>
+        </nav>
       </div>
     </footer>
   );
