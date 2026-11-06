@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
-import type { MenuItem } from "../types/menu";
+import type { MenuItem, PriceOption } from "../types/menu";
+import { FarmShopAdmin } from "./FarmShopAdmin";
 
 type AdminMenuResponse = {
   published: boolean;
@@ -171,6 +172,10 @@ export function Admin() {
     });
   }
 
+  function updatePriceOptions(id: string, options: PriceOption[]) {
+    updateItem(id, "priceOptions", options);
+  }
+
   function normaliseOrder(items: MenuItem[]) {
     return items.map((item, index) => ({
       ...item,
@@ -218,6 +223,7 @@ export function Admin() {
       ingredients: "",
       allergens: "",
       visible: true,
+      priceOptions: [],
       order: (menu.items.length + 1) * 10,
     };
 
@@ -624,6 +630,37 @@ export function Admin() {
                   </label>
                 </div>
 
+                <div className="admin-field admin-field-wide">
+                  <span>Prisalternativer (valgfritt)</span>
+                  <p className="admin-help">Når du legger til prisalternativer, vises disse i stedet for vanlig pris. For eksempel 1 stk, 4 stk og 6 stk.</p>
+                  {(item.priceOptions ?? []).map((option, optionIndex) => (
+                    <div className="admin-price-option" key={optionIndex}>
+                      <input
+                        aria-label={`Mengde ${optionIndex + 1}`}
+                        placeholder="Mengde, f.eks. 4 stk"
+                        value={option.quantity}
+                        onChange={(event) => updatePriceOptions(item.id,
+                          (item.priceOptions ?? []).map((o, i) => i === optionIndex ? { ...o, quantity: event.target.value } : o))}
+                      />
+                      <input
+                        aria-label={`Pris ${optionIndex + 1}`}
+                        type="number" min="0" step="1"
+                        placeholder="Pris i kr"
+                        value={option.price}
+                        onChange={(event) => updatePriceOptions(item.id,
+                          (item.priceOptions ?? []).map((o, i) => i === optionIndex ? { ...o, price: Number(event.target.value) } : o))}
+                      />
+                      <button type="button" className="admin-secondary-button"
+                        onClick={() => updatePriceOptions(item.id,
+                          (item.priceOptions ?? []).filter((_, i) => i !== optionIndex))}>Fjern</button>
+                    </div>
+                  ))}
+                  <button type="button" className="admin-secondary-button"
+                    onClick={() => updatePriceOptions(item.id, [...(item.priceOptions ?? []), { quantity: "", price: 0 }])}>
+                    + Legg til prisalternativ
+                  </button>
+                </div>
+
                 <label className="admin-field admin-field-wide">
                   <span>Ekstra tekst</span>
                   <input
@@ -680,6 +717,7 @@ export function Admin() {
             </button>
           </div>
         </div>
+        <FarmShopAdmin />
       </div>
     </main>
   );

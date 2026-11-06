@@ -1343,3 +1343,265 @@ a {
     line-height: 1.7;
   }
 }
+
+
+/* Admin: flexible quantity and price options */
+
+.admin-fields > .admin-field:has(> .admin-help) {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  column-gap: 14px;
+  row-gap: 10px;
+  align-items: start;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > span:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  padding-top: 10px;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > .admin-help,
+.admin-fields > .admin-field:has(> .admin-help) > .admin-price-option,
+.admin-fields > .admin-field:has(> .admin-help) > button {
+  grid-column: 2;
+  margin: 0;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > button {
+  justify-self: start;
+}
+
+.admin-price-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-price-option input,
+.admin-price-option input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  flex: none;
+}
+
+.admin-price-option button {
+  white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+  .admin-fields > .admin-field:has(> .admin-help) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-fields > .admin-field:has(> .admin-help) > span:first-child,
+  .admin-fields > .admin-field:has(> .admin-help) > .admin-help,
+  .admin-fields > .admin-field:has(> .admin-help) > .admin-price-option,
+  .admin-fields > .admin-field:has(> .admin-help) > button {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-price-option {
+    grid-template-columns: minmax(0, 1fr) 85px auto;
+    gap: 6px;
+  }
+
+  .admin-price-option button {
+    padding: 9px 10px;
+  }
+}
+
+.admin-help { font-size: .85rem; opacity: .75; margin: .25rem 0 .5rem; }
+.admin-farm-section { margin-top: 3.5rem; border-top: 1px solid #d8c9b5; padding-top: 2rem; }
+.admin-farm-section > h2 { margin-bottom: .5rem; }
+
+
+/* Flexible price alternatives: admin layout */
+
+.admin-fields > .admin-field:has(> .admin-help) {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: start;
+  column-gap: 14px;
+  row-gap: 10px;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > span:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  padding-top: 10px;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > .admin-help,
+.admin-fields > .admin-field:has(> .admin-help) > .admin-price-option,
+.admin-fields > .admin-field:has(> .admin-help) > button {
+  grid-column: 2;
+  margin: 0;
+}
+
+.admin-fields > .admin-field:has(> .admin-help) > button {
+  justify-self: start;
+}
+
+.admin-price-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  gap: 10px;
+  align-items: center;
+  min-width: 0;
+}
+
+.admin-price-option input,
+.admin-price-option input[type="number"] {
+  width: 100%;
+  min-width: 0;
+  flex: none;
+}
+
+.admin-price-option button {
+  white-space: nowrap;
+}
+
+/* Flexible price alternatives: public menu */
+
+.menu-price-options {
+  min-width: 180px;
+}
+
+.menu-price-options-list {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.menu-price-option {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.menu-price-option span {
+  margin: 0;
+  font-family: Arial, Helvetica, sans-serif;
+  font-size: 0.82rem;
+  white-space: nowrap;
+}
+
+.menu-price-option strong {
+  font-size: 1.25rem;
+  white-space: nowrap;
+}
+
+/* Mobile adjustments */
+
+@media (max-width: 760px) {
+  .menu-item:has(.menu-price-options) {
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0.9rem;
+  }
+
+  .menu-price-options {
+    min-width: 0;
+    text-align: left;
+  }
+
+  .menu-price-options-list {
+    max-width: 280px;
+  }
+
+  .menu-price-option strong {
+    font-size: 1.1rem;
+  }
+}
+
+@media (max-width: 650px) {
+  .admin-fields > .admin-field:has(> .admin-help) {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-fields > .admin-field:has(> .admin-help) > span:first-child,
+  .admin-fields > .admin-field:has(> .admin-help) > .admin-help,
+  .admin-fields > .admin-field:has(> .admin-help) > .admin-price-option,
+  .admin-fields > .admin-field:has(> .admin-help) > button {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-price-option {
+    grid-template-columns: minmax(0, 1fr) 85px auto;
+    gap: 6px;
+  }
+
+  .admin-price-option button {
+    padding: 9px 10px;
+  }
+}
+
+
+/* Farm shop: keep price alternatives in the right column */
+
+.admin-price-options-field {
+  display: grid;
+  grid-template-columns: 160px minmax(0, 1fr);
+  align-items: start;
+  gap: 10px 14px;
+}
+
+.admin-price-options-field > span:first-child {
+  grid-column: 1;
+  grid-row: 1;
+  padding-top: 10px;
+}
+
+.admin-price-options-field > .admin-price-option,
+.admin-price-options-field > button {
+  grid-column: 2;
+  margin: 0;
+}
+
+.admin-price-options-field > button {
+  justify-self: start;
+}
+
+.admin-price-options-field > .admin-price-option {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 120px auto;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.admin-price-options-field > .admin-price-option input {
+  width: 100%;
+  min-width: 0;
+  flex: none;
+}
+
+.admin-price-options-field > .admin-price-option button {
+  white-space: nowrap;
+}
+
+@media (max-width: 650px) {
+  .admin-price-options-field {
+    grid-template-columns: minmax(0, 1fr);
+  }
+
+  .admin-price-options-field > span:first-child,
+  .admin-price-options-field > .admin-price-option,
+  .admin-price-options-field > button {
+    grid-column: 1;
+    grid-row: auto;
+  }
+
+  .admin-price-options-field > .admin-price-option {
+    grid-template-columns: minmax(0, 1fr) 85px auto;
+    gap: 6px;
+  }
+
+  .admin-price-options-field > .admin-price-option button {
+    padding: 9px 10px;
+  }
+}

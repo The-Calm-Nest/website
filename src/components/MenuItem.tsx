@@ -5,6 +5,11 @@ type Props = {
 };
 
 export function MenuItem({ item }: Props) {
+  const priceOptions = (item.priceOptions ?? []).filter(
+    (option) => option.quantity.trim()
+  );
+  const hasPriceOptions = priceOptions.length > 0;
+
   const hasIngredientInfo = Boolean(
     item.ingredients?.trim() || item.allergens?.trim()
   );
@@ -17,7 +22,6 @@ export function MenuItem({ item }: Props) {
           {item.badge && <span>{item.badge}</span>}
         </div>
 
-        {item.quantity && <p className="menu-quantity">{item.quantity}</p>}
         {item.description && <p>{item.description}</p>}
         {item.extraText && (
           <p className="menu-extra">{item.extraText}</p>
@@ -44,10 +48,32 @@ export function MenuItem({ item }: Props) {
         )}
       </div>
 
-      <div className="menu-price">
-        <strong>{item.price} kr</strong>
-        {item.priceWithSeeds && (
-          <span>{item.priceWithSeeds} kr med frø</span>
+      <div className={`menu-price${hasPriceOptions || item.quantity?.trim() ? " menu-price-options" : ""}`}>
+        {hasPriceOptions ? (
+          <div className="menu-price-options-list">
+            {priceOptions.map((option, index) => (
+              <div className="menu-price-option" key={`${option.quantity}-${index}`}>
+                <span>{option.quantity}</span>
+                <strong>{option.price} kr</strong>
+              </div>
+            ))}
+          </div>
+        ) : (
+          <>
+            {item.quantity?.trim() ? (
+              <div className="menu-price-options-list">
+                <div className="menu-price-option">
+                  <span>{item.quantity}</span>
+                  <strong>{item.price} kr</strong>
+                </div>
+              </div>
+            ) : (
+              <strong>{item.price} kr</strong>
+            )}
+            {item.priceWithSeeds != null && (
+              <span>{item.priceWithSeeds} kr med frø</span>
+            )}
+          </>
         )}
       </div>
     </article>

@@ -11,6 +11,10 @@ node_modules
 dist
 dist-ssr
 *.local
+.wrangler/
+.dev.vars
+backup-before-deploy.sql
+local-schema.sql
 
 # Editor directories and files
 .vscode/*

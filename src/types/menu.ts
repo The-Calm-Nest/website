@@ -1,3 +1,5 @@
+export type PriceOption = { quantity: string; price: number };
+
 export type MenuItem = {
   id: string;
   category: string;
@@ -5,6 +7,7 @@ export type MenuItem = {
   description?: string;
   price: number;
   priceWithSeeds?: number;
+  priceOptions?: PriceOption[];
   extraText?: string;
   quantity?: string;
   badge?: string;

@@ -21,6 +21,7 @@ type MenuRow = {
   allergens: string | null;
   visible: number;
   sort_order: number;
+  price_options: string | null;
 };
 
 type AdminMenuItem = {
@@ -30,6 +31,7 @@ type AdminMenuItem = {
   description?: string;
   price: number;
   priceWithSeeds?: number;
+  priceOptions?: PriceOption[];
   extraText?: string;
   quantity?: string;
   badge?: string;
@@ -38,6 +40,67 @@ type AdminMenuItem = {
   visible?: boolean;
   order: number;
 };
+
+type PriceOption = { quantity: string; price: number };
+
+type FarmShopRow = {
+  id: string;
+  name: string;
+  description: string | null;
+  price_options: string | null;
+  price_text: string | null;
+  visible: number;
+  sort_order: number;
+};
+
+type AdminFarmShopItem = {
+  id: string;
+  name: string;
+  description?: string;
+  priceOptions?: PriceOption[];
+  priceText?: string;
+  visible?: boolean;
+  order: number;
+};
+
+function parsePriceOptions(value: string | null): PriceOption[] {
+  if (!value) return [];
+  try {
+    const parsed: unknown = JSON.parse(value);
+    if (!Array.isArray(parsed)) return [];
+    return parsed.filter((option): option is PriceOption =>
+      typeof option === "object" && option !== null &&
+      typeof option.quantity === "string" &&
+      typeof option.price === "number" && Number.isFinite(option.price)
+    );
+  } catch {
+    return [];
+  }
+}
+
+function validatePriceOptions(value: unknown): value is PriceOption[] | undefined {
+  return value === undefined || (
+    Array.isArray(value) && value.length <= 30 && value.every((option) =>
+      typeof option === "object" && option !== null &&
+      typeof option.quantity === "string" &&
+      option.quantity.trim().length > 0 && option.quantity.length <= 100 &&
+      typeof option.price === "number" &&
+      Number.isFinite(option.price) && option.price >= 0
+    )
+  );
+}
+
+function mapFarmShopRow(row: FarmShopRow) {
+  return {
+    id: row.id,
+    name: row.name,
+    description: row.description ?? undefined,
+    priceOptions: parsePriceOptions(row.price_options),
+    priceText: row.price_text ?? undefined,
+    visible: row.visible === 1,
+    order: row.sort_order,
+  };
+}
 
 const encoder = new TextEncoder();
 
@@ -161,6 +224,7 @@ function mapMenuRow(row: MenuRow) {
     price: row.price ?? 0,
     priceWithSeeds:
       row.price_with_seeds ?? undefined,
+    priceOptions: parsePriceOptions(row.price_options),
     extraText: row.extra_text ?? undefined,
     quantity: row.quantity ?? undefined,
     badge: row.badge ?? undefined,
@@ -314,6 +378,7 @@ export default {
             description,
             price,
             price_with_seeds,
+            price_options,
             extra_text,
             quantity,
             badge,
@@ -443,6 +508,10 @@ export default {
             );
           }
 
+          if (!validatePriceOptions(item.priceOptions)) {
+            return json({ error: `Ugyldige prisalternativer for «${item.name}».` }, 400);
+          }
+
           if (
             item.priceWithSeeds !==
               undefined &&
@@ -476,6 +545,7 @@ export default {
                 description,
                 price,
                 price_with_seeds,
+                price_options,
                 extra_text,
                 quantity,
                 badge,
@@ -484,7 +554,7 @@ export default {
                 visible,
                 sort_order
               )
-              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+              VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
 
               ON CONFLICT(id) DO UPDATE SET
                 category = excluded.category,
@@ -492,6 +562,7 @@ export default {
                 description = excluded.description,
                 price = excluded.price,
                 price_with_seeds = excluded.price_with_seeds,
+                price_options = COALESCE(excluded.price_options, menu_items.price_options),
                 extra_text = excluded.extra_text,
                 quantity = excluded.quantity,
                 badge = excluded.badge,
@@ -508,6 +579,7 @@ export default {
                 null,
               item.price,
               item.priceWithSeeds ?? null,
+              item.priceOptions === undefined ? null : JSON.stringify(item.priceOptions),
               item.extraText?.trim() ||
                 null,
               item.quantity?.trim() ||
@@ -642,6 +714,7 @@ export default {
             description,
             price,
             price_with_seeds,
+            price_options,
             extra_text,
             quantity,
             badge,
@@ -677,6 +750,90 @@ export default {
           },
           503
         );
+      }
+    }
+
+    /*
+     * FARM SHOP: public products and authenticated administration.
+     * Separate from the weekly menu publication state.
+     */
+    if (url.pathname === "/api/farm-shop" && request.method === "GET") {
+      try {
+        const result = await env.DB.prepare(`
+          SELECT id, name, description, price_options, price_text, visible, sort_order
+          FROM farm_shop_items WHERE visible = 1 ORDER BY sort_order ASC
+        `).all<FarmShopRow>();
+        return json({ items: result.results.map(mapFarmShopRow) });
+      } catch (error) {
+        console.error("Failed to load farm shop:", error);
+        return json({ error: "Farm shop temporarily unavailable", items: [] }, 503);
+      }
+    }
+
+    if (url.pathname === "/api/admin/farm-shop" &&
+        (request.method === "GET" || request.method === "PUT")) {
+      if (!env.SESSION_SECRET || !await isAuthenticated(request, env.SESSION_SECRET)) {
+        return json({ error: "Ikke innlogget" }, 401);
+      }
+
+      if (request.method === "GET") {
+        try {
+          const result = await env.DB.prepare(`
+            SELECT id, name, description, price_options, price_text, visible, sort_order
+            FROM farm_shop_items ORDER BY sort_order ASC
+          `).all<FarmShopRow>();
+          return json({ items: result.results.map(mapFarmShopRow) });
+        } catch (error) {
+          console.error("Failed to load admin farm shop:", error);
+          return json({ error: "Kunne ikke hente gårdsvarer" }, 500);
+        }
+      }
+
+      try {
+        const body = await request.json<{ items?: AdminFarmShopItem[] }>();
+        if (!Array.isArray(body.items) || body.items.length > 200) {
+          return json({ error: "Ugyldige gårdsvarer" }, 400);
+        }
+        const ids = new Set<string>();
+        for (const item of body.items) {
+          if (typeof item.id !== "string" || !item.id.trim() ||
+              typeof item.name !== "string" || !item.name.trim() ||
+              !Number.isFinite(item.order) || ids.has(item.id) ||
+              !validatePriceOptions(item.priceOptions)) {
+            return json({ error: "Ugyldig produkt eller prisalternativer" }, 400);
+          }
+          ids.add(item.id);
+        }
+
+        const statements = body.items.map((item) => env.DB.prepare(`
+          INSERT INTO farm_shop_items
+            (id, name, description, price_options, price_text, visible, sort_order)
+          VALUES (?, ?, ?, ?, ?, ?, ?)
+          ON CONFLICT(id) DO UPDATE SET
+            name = excluded.name,
+            description = excluded.description,
+            price_options = excluded.price_options,
+            price_text = excluded.price_text,
+            visible = excluded.visible,
+            sort_order = excluded.sort_order
+        `).bind(
+          item.id, item.name.trim(), item.description?.trim() || null,
+          JSON.stringify(item.priceOptions ?? []), item.priceText?.trim() || null,
+          item.visible === false ? 0 : 1, item.order
+        ));
+        if (body.items.length === 0) {
+          statements.push(env.DB.prepare("DELETE FROM farm_shop_items"));
+        } else {
+          const placeholders = body.items.map(() => "?").join(", ");
+          statements.push(env.DB.prepare(
+            `DELETE FROM farm_shop_items WHERE id NOT IN (${placeholders})`
+          ).bind(...body.items.map((item) => item.id)));
+        }
+        await env.DB.batch(statements);
+        return json({ success: true });
+      } catch (error) {
+        console.error("Failed to save farm shop:", error);
+        return json({ error: "Kunne ikke lagre gårdsvarer" }, 500);
       }
     }
 
